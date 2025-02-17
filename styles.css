@@ -36,19 +36,21 @@ nav a:hover {
 /* Seção de destaque (Hero) */
 .hero {
     background: url('hospital.webp') no-repeat center center/cover;
-    color: #FFA500;
+    color: white;
     text-align: center;
     padding: 100px 20px;
 }
 
 .hero h1 {
-    font-size: 36px;
+    font-size: 38px;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .hero p {
-    font-size: 18px;
+    font-size: 20px;
     margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .btn {
