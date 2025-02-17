@@ -10,7 +10,7 @@
 
     <header>
         <div class="logo">
-            <img src="logo.png" alt="Healthcare Tec" width="180">
+            <img src="logo.jpg" alt="Healthcare Tec" width="180">
         </div>
         <nav>
             <a href="#sobre">Sobre</a>
@@ -49,7 +49,7 @@
     <section id="contato" class="container">
         <h2>Entre em Contato</h2>
         <p>Quer saber mais sobre nossas soluções? Entre em contato conosco.</p>
-        <a href="mailto:contato@healthcare.tec.br" class="btn">Enviar E-mail</a>
+        <a href="mailto:g.breviglieri@ outlook.com" class="btn">Enviar E-mail</a>
     </section>
 
     <footer>
