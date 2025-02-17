@@ -50,7 +50,7 @@
     <section id="contato" class="container">
         <h2>Entre em Contato</h2>
         <p>Quer saber mais sobre nossas soluções? Entre em contato conosco.</p>
-        <a href="mailto:g.breviglieri@ outlook.com" class="btn">Enviar E-mail</a>
+        <a href="mailto:cadastro@outlook.com" class="btn">Enviar E-mail</a>
     </section>
 
     <footer>
