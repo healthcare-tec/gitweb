@@ -37,7 +37,7 @@ nav a:hover {
 .hero {
     position: relative;
     background: url('hospital.webp') no-repeat center center/cover;
-    color: green;
+    color: white;
     text-align: center;
     padding: 100px 20px;
 }
