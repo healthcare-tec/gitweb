@@ -75,7 +75,7 @@ nav a:hover {
 }
 
 /* Containers das seções */
-.btn {
+.container {
     position: relative;  /* Garante que o z-index seja aplicado */
     z-index: 3;  /* Número maior que o da camada escura */
     display: inline-block;
@@ -88,7 +88,7 @@ nav a:hover {
     transition: background 0.3s ease-in-out;
 }
 
-.btn:hover {
+/*.container:hover {
     background: #0056b3;
 }
 /* Lista de serviços */
