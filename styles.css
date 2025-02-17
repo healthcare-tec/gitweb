@@ -75,17 +75,22 @@ nav a:hover {
 }
 
 /* Containers das seções */
-.container {
-    position:relative;
-    max-width: 800px;
-    margin: 40px auto;
-    background: white;
-    padding: 20px;
+.btn {
+    position: relative;  /* Garante que o z-index seja aplicado */
+    z-index: 3;  /* Número maior que o da camada escura */
+    display: inline-block;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out;
 }
 
+.btn:hover {
+    background: #0056b3;
+}
 /* Lista de serviços */
 ul {
     list-style: none;
