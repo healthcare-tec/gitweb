@@ -37,7 +37,7 @@ nav a:hover {
 .hero {
     position: relative;
     background: url('hospital.webp') no-repeat center center/cover;
-    color: white;
+    color: green;
     text-align: center;
     padding: 100px 20px;
 }
@@ -50,7 +50,7 @@ nav a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(244, 255, 244, 50); /* Ajuste a transparência conforme necessário */
+    background: rgba(244, 255, 244, 0.5); /* Ajuste a transparência conforme necessário */
     z-index: 1;
 }
 
@@ -59,7 +59,7 @@ nav a:hover {
 .hero p {
     position: relative;
     z-index: 2;
-    text-shadow: 0px 1px 2px rgba(200, 255, 200, 20);
+    text-shadow: 0px 1px 2px rgba(200, 255, 200, 0.2);
 }
 
 .hero h1 {
@@ -71,7 +71,7 @@ nav a:hover {
 .hero p {
     font-size: 46px;
     -webkit-text-stroke: 2px green;
-    text-shadow: 0px 1x 2px rgba(200, 255, 200, 20);
+    text-shadow: 0px 1x 2px rgba(200, 255, 200, 0.2);
 }
 
 /* Containers das seções */
