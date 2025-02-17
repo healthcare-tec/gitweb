@@ -36,7 +36,7 @@ nav a:hover {
 /* Seção de destaque (Hero) */
 .hero {
     background: url('hospital.webp') no-repeat center center/cover;
-    color: white;
+    color: #FFA500;
     text-align: center;
     padding: 100px 20px;
 }
@@ -55,7 +55,7 @@ nav a:hover {
     display: inline-block;
     padding: 10px 20px;
     background: #007bff;
-    color: #FF6600;
+    color: white;
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
