@@ -23,7 +23,7 @@
 
     <section class="hero">
         <h1>Transformando Hospitais com Tecnologia e Inovação</h1>
-        <p>Da ideação ao planejamento operacional, oferecemos soluções para otimizar processos e reduzir custos hospitalares.</p>
+        <p>Da ideação à operacão, oferecemos soluções para otimizar processos e reduzir custos hospitalares.</p>
         <a href="#contato" class="btn">Fale Conosco</a>
     </section>
 
