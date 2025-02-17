@@ -76,6 +76,7 @@ nav a:hover {
 
 /* Containers das seções */
 .container {
+    position:relative;
     max-width: 800px;
     margin: 40px auto;
     background: white;
