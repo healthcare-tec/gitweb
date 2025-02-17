@@ -9,9 +9,6 @@
 <body>
 
     <header>
-        <div class="logo">
-     #       <img src="logo.jpg" alt="Healthcare Tec" width="180">
-        </div>
         <nav>
             <a href="#sobre">Sobre</a>
             <a href="#servicos">Serviços</a>
