@@ -50,7 +50,7 @@ nav a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0.1, 0.1, 0, 0); /* Ajuste a transparência conforme necessário */
+    background: rgba(244, 255, 244, 50); /* Ajuste a transparência conforme necessário */
     z-index: 1;
 }
 
@@ -59,19 +59,19 @@ nav a:hover {
 .hero p {
     position: relative;
     z-index: 2;
-    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 0px 1px 2px rgba(200, 255, 200, 20);
 }
 
 .hero h1 {
     font-size: 63px;
     margin-bottom: 20px;
-    -webkit-text-stroke: 2px red;
+    -webkit-text-stroke: 2px green;
 }
 
 .hero p {
     font-size: 46px;
-    -webkit-text-stroke: 2px red;
-    text-shadow: 0px 1x 2px rgba(0, 0, 0, 0.5);
+    -webkit-text-stroke: 2px green;
+    text-shadow: 0px 1x 2px rgba(200, 255, 200, 20);
 }
 
 /* Containers das seções */
