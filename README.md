@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +10,9 @@
 <body>
 
     <header>
+        <div class="logo">
+            <img src="logo.jpg" alt="Healthcare Tec" width="360">
+        </div>
         <nav>
             <a href="#sobre">Sobre</a>
             <a href="#servicos">Serviços</a>
