@@ -10,7 +10,7 @@
 
     <header>
         <div class="logo">
-            <img src="logo.jpg" alt="Healthcare Tec" width="220">
+     #       <img src="logo.jpg" alt="Healthcare Tec" width="180">
         </div>
         <nav>
             <a href="#sobre">Sobre</a>
