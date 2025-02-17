@@ -11,7 +11,7 @@
 
     <header>
         <div class="logo">
-            <img alt="Healthcare Tec" width="180">
+            <img=logo.jpg alt="Healthcare Tec" width="180">
         </div>
         <nav>
             <a href="#sobre">Sobre</a>
@@ -23,7 +23,7 @@
 
     <section class="hero">
         <h1>Transformando Hospitais com Tecnologia e Inovação</h1>
-        <p>Da ideação à operacão, oferecemos soluções para otimizar processos e reduzir custos hospitalares.</p>
+        <p>Da ideação à operacão, oferecemos soluções para otimizar processos e reduzir custos.</p>
         <a href="#contato" class="btn">Fale Conosco</a>
     </section>
 
