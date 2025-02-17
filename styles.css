@@ -10,7 +10,7 @@ body {
 /* Cabeçalho */
 header {
     background: #0044cc;
-    color: white;
+    color: black;
     display: flex;
     justify-content: space-between;
     align-items: center;
