@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Diagram</title>
+    <script src="vis-network.min.js"></script>  
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #network {
+            width: 90%;
+            height: 33vh; /* 1/3 of screen height */
+            margin: auto;
+            border: 1px solid lightgray;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        input {
+            width: 200px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Diagrama Interativo - HealthCare Technologies</h2>
+    <div id="network"></div>
+
+    <div class="controls">
+        <input type="text" id="nodeText" placeholder="Enter text for new rectangle">
+        <button id="addNodeBtn">➕ Addicionar/ Retângulo  </button> 
+        <button id="exportBtn">📤 Exportar CSV</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let nodeIdCounter = 3; // Start from 3 since two nodes exist
+            let edgeIdCounter = 1;
+            let nodes = new vis.DataSet([
+                { id: 1, label: "Início", shape: "box" },
+                { id: 2, label: "Fim", shape: "box" }
+            ]);
+
+            let edges = new vis.DataSet([
+                { id: edgeIdCounter++, from: 1, to: 2, arrows: "to" }
+            ]);
+
+            let container = document.getElementById("network");
+            let data = { nodes: nodes, edges: edges };
+            let options = {
+                physics: false,  
+                interaction: { dragNodes: true }, 
+                manipulation: {
+                    enabled: true,  
+                    addEdge: function (data, callback) {
+                        if (data.from !== data.to) {
+                            data.arrows = "to";
+                            callback(data);
+                        }
+                    }
+                }
+            };
+
+            let network = new vis.Network(container, data, options);
+
+            document.getElementById("addNodeBtn").addEventListener("click", function() {
+                let text = document.getElementById("nodeText").value || "New Node";
+                nodes.add({ id: nodeIdCounter++, label: text, shape: "box" });
+            });
+
+
+            document.getElementById("exportBtn").addEventListener("click", function() {
+                let csvContent = "id,label\n";
+                nodes.forEach(node => csvContent += `${node.id},${node.label}\n`);
+
+                csvContent += "\nfrom,to\n";
+                edges.forEach(edge => csvContent += `${edge.from},${edge.to}\n`);
+
+                let blob = new Blob([csvContent], { type: "text/csv" });
+                let a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "diagrama_healthcare.tec.br_.csv";
+                a.click();
+            });
+        });
+    </script>
+
+</body>
+</html>
