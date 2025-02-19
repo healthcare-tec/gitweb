@@ -50,7 +50,7 @@ nav a:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(250, 255, 250, 0.7); /* Ajuste a transparência conforme necessário */
+    background: rgba(255, 255, 255, 0.7); /* Ajuste a transparência conforme necessário */
     z-index: 1;
 }
 
@@ -65,12 +65,12 @@ nav a:hover {
 .hero h1 {
     font-size: 46px;
     margin-bottom: 20px;
-    -webkit-text-stroke: 1px green;
+    -webkit-text-stroke: 1px griz;
 }
 
 .hero p {
     font-size: 32px;
-    -webkit-text-stroke: 1px green;
+    -webkit-text-stroke: 1px griz;
     text-shadow: 0px 1x 2px rgba(200, 255, 200, 0.4);
 }
 
