@@ -33,7 +33,7 @@
         <p>Somos especialistas em consultoria hospitalar, aplicando tecnologia para otimizar fluxos, reduzir custos e garantir eficiência operacional.</p>
     </section>
 
-    <section id="sobre" class="container">
+    <section id="diagrama" class="container">
         <h2>Diagrama Interativo</h2>
         
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
