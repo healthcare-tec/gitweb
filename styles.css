@@ -70,7 +70,7 @@ nav a:hover {
 
 .hero p {
     font-size: 32px;
-    -webkit-text-stroke: 1px gray;
+    -webkit-text-stroke: 0px gray;
     text-shadow: 0px 0px 1px rgba(200, 255, 200, 0.4);
 }
 
