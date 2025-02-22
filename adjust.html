@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Simulation Adjustment</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #configContainer { width: 50%; margin: auto; text-align: left; padding: 20px; border: 1px solid gray; }
+        label { display: block; margin-top: 5px; }
+        input, select { width: 100%; padding: 5px; margin-top: 3px; }
+        button { margin: 10px; padding: 10px; cursor: pointer; }
+        canvas { width: 80%; max-width: 800px; margin-top: 20px; }
+        #chartContainer { position: relative; width: 80%; margin: auto; }
+    </style>
+</head>
+<body>
+    <h2>Adjust Simulation Parameters</h2><div id="configContainer">
+    <label>Macro Process Name:</label>
+    <input type="text" id="macroProcessName" placeholder="Enter macro process name">
+    
+    <label>Type of Establishment:</label>
+    <select id="establishmentType">
+        <option value="hospital">Hospital</option>
+        <option value="clinic">Clinic</option>
+        <option value="lab">Laboratory</option>
+        <option value="other">Other</option>
+    </select>
+    
+    <label>Establishment CNPJ:</label>
+    <input type="text" id="cnpj" placeholder="Enter CNPJ">
+    
+    <label>Email for Report:</label>
+    <input type="email" id="email" placeholder="Enter email">
+    
+    <label><input type="checkbox" id="consent"> I agree to share data for analysis</label>
+    
+    <button id="validateBtn" onclick="validateInput()">Validate and Enable Editing</button>
+</div>
+
+<div id="chartContainer">
+    <canvas id="monteCarloChartBase"></canvas>
+    <canvas id="monteCarloChartAdjusted" style="position: absolute; top: 0; left: 0; opacity: 0.6;"></canvas>
+</div>
+
+<button id="sendReport" onclick="sendReport()" disabled>Send Report</button>
+
+<script>
+    let processes = [];
+    let connections = [];
+    let originalResults = [];
+    let adjustedResults = [];
+    
+    function validateInput() {
+        let cnpj = document.getElementById("cnpj").value;
+        let email = document.getElementById("email").value;
+        let consent = document.getElementById("consent").checked;
+        
+        if (!validateCNPJ(cnpj)) {
+            alert("Invalid CNPJ");
+            return;
+        }
+        if (!email.includes("@")) {
+            alert("Invalid email");
+            return;
+        }
+        if (!consent) {
+            alert("You must agree to share data");
+            return;
+        }
+        
+        alert("Validation successful! You can now adjust parameters.");
+        document.getElementById("sendReport").disabled = false;
+    }
+    
+    function validateCNPJ(cnpj) {
+        return /^[0-9]{14}$/.test(cnpj);
+    }
+    
+    function loadFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get("data");
+        if (dataParam) {
+            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+            processes = parsedData.processes;
+            connections = parsedData.connections;
+            runSimulation();
+        } else {
+            alert("No process data received. Please start from the input module.");
+        }
+    }
+
+    function runSimulation() {
+        let simulations = 1000;
+        originalResults = runMonteCarlo(simulations, processes);
+        adjustedResults = [...originalResults];
+        plotResults();
+    }
+
+    function runMonteCarlo(simulations, processList) {
+        let results = [];
+        for (let i = 0; i < simulations; i++) {
+            let totalTime = 0;
+            processList.forEach(proc => {
+                let sigma = (proc.avg - proc.min) / 5;
+                let time = normalDistribution(proc.avg, sigma);
+                totalTime += time / proc.parallel;
+            });
+            results.push(totalTime);
+        }
+        return results;
+    }
+
+    function plotResults() {
+        let ctxBase = document.getElementById("monteCarloChartBase").getContext("2d");
+        let ctxAdj = document.getElementById("monteCarloChartAdjusted").getContext("2d");
+        
+        let bins = 20;
+        let labels = generateBins(originalResults, bins);
+        
+        new Chart(ctxBase, {
+            type: "bar",
+            data: { labels, datasets: [{ label: "Original", data: binData(originalResults, bins), backgroundColor: "rgba(75, 192, 192, 0.6)" }] }
+        });
+        
+        new Chart(ctxAdj, {
+            type: "bar",
+            data: { labels, datasets: [{ label: "Adjusted", data: binData(adjustedResults, bins), backgroundColor: "rgba(255, 99, 132, 0.4)" }] }
+        });
+    }
+    
+    function generateBins(data, bins) {
+        let max = Math.max(...data);
+        let min = Math.min(...data);
+        let step = (max - min) / bins;
+        return [...Array(bins).keys()].map(i => (min + i * step).toFixed(1));
+    }
+    
+    function binData(data, bins) {
+        let histogram = new Array(bins).fill(0);
+        let max = Math.max(...data);
+        let min = Math.min(...data);
+        let step = (max - min) / bins;
+        data.forEach(value => {
+            let index = Math.floor((value - min) / step);
+            if (index >= bins) index = bins - 1;
+            histogram[index]++;
+        });
+        return histogram;
+    }
+    
+    function sendReport() {
+        let userEmail = document.getElementById("email").value;
+        alert(`Report sent to ${userEmail} and a copy to cadastro@outlook.com`);
+    }
+    
+    window.onload = loadFromURL;
+</script>
+
+</body>
+</html>
