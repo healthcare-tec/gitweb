@@ -16,6 +16,7 @@
 <body>
     <h2>Healthcare Technologies - Time Distribution</h2>
     <canvas id="monteCarloChart"></canvas>
+    <button onclick="redirectToAdjust()">Adjust Parameters</button>
     <div id="processInfo"></div><script>
     let processes = [];
     let connections = [];
@@ -95,7 +96,7 @@
 
     plotResults(results);
     }
-    <button onclick="redirectToAdjust()">Adjust Parameters</button>
+    
     
     
     function plotResults(results) {
