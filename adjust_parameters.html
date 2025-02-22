@@ -52,7 +52,25 @@
             <strong>Email:</strong> ${email}
         `;
         
+        renderProcessInfo();
         runSimulation();
+    }
+    
+    function renderProcessInfo() {
+        const container = document.getElementById("processInfo");
+        container.innerHTML = "<h3>Process Flow Information</h3>";
+        processes.forEach(({ id, label, min, avg, goal, parallel }) => {
+            const div = document.createElement("div");
+            div.className = "process-box";
+            div.innerHTML = `
+                <strong>${label}</strong><br>
+                Min Time: ${min} min<br>
+                Avg Time: ${avg} min<br>
+                Goal Time: ${goal} min<br>
+                Parallel Processes: ${parallel}
+            `;
+            container.appendChild(div);
+        });
     }
     
     function runSimulation() {
@@ -78,12 +96,18 @@
 
     function plotResults() {
         let ctxBase = document.getElementById("monteCarloChartBase").getContext("2d");
+        let ctxAdj = document.getElementById("monteCarloChartAdjusted").getContext("2d");
         let bins = 20;
         let labels = generateBins(originalResults, bins);
         
         new Chart(ctxBase, {
             type: "bar",
             data: { labels, datasets: [{ label: "Original", data: binData(originalResults, bins), backgroundColor: "rgba(75, 192, 192, 0.6)" }] }
+        });
+        
+        new Chart(ctxAdj, {
+            type: "bar",
+            data: { labels, datasets: [{ label: "Adjusted", data: binData(adjustedResults, bins), backgroundColor: "rgba(255, 99, 132, 0.4)" }] }
         });
     }
     
