@@ -51,7 +51,7 @@
         let processes = nodes.get();
         let connections = edges.get().map(edge => ({ from: edge.from, to: edge.to }));
         let processData = encodeURIComponent(JSON.stringify({ processes, connections }));
-        window.location.href = `input.html?data=${processData}`;
+        window.location.href = `Input.html?data=${processData}`;
     }
 </script>
 
