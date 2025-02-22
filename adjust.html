@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,60 +15,74 @@
     <h2>Validation Form</h2>
     <div id="configContainer">
         <label>Macro Process Name:</label>
-        <input type="text" id="macroProcessName" placeholder="Enter macro process name">
-        
-        <label>Type of Establishment:</label>
-        <select id="establishmentType">
-            <option value="hospital">Hospital</option>
-            <option value="clinic">Clinic</option>
-            <option value="lab">Laboratory</option>
-            <option value="other">Other</option>
-        </select>
-        
-        <label>Establishment CNPJ (somente números):</label>
-        <input type="text" id="cnpj" placeholder="Enter CNPJ">
-        
-        <label>Email for Report:</label>
-        <input type="email" id="email" placeholder="Enter email">
-        
-        <label><input type="checkbox" id="consent"> I agree to share data for analysis</label>
-        
-        <button id="validateBtn" onclick="validateInput()">Validate and Proceed</button>
-    </div>
+        <input type="text" id="macroProcessName" placeholder="Enter macro process name"><label>Type of Establishment:</label>
+    <select id="establishmentType">
+        <option value="hospital">Hospital</option>
+        <option value="clinic">Clinic</option>
+        <option value="lab">Laboratory</option>
+        <option value="other">Other</option>
+    </select>
     
-    <script>
-        function validateInput() {
-            let macroProcessName = document.getElementById("macroProcessName").value;
-            let cnpj = document.getElementById("cnpj").value;
-            let email = document.getElementById("email").value;
-            let consent = document.getElementById("consent").checked;
-            let establishmentType = document.getElementById("establishmentType").value;
-            
-            if (!macroProcessName) {
-                alert("Macro Process Name is required");
-                return;
-            }
-            if (!validateCNPJ(cnpj)) {
-                alert("Invalid CNPJ");
-                return;
-            }
-            if (!email.includes("@")) {
-                alert("Invalid email");
-                return;
-            }
-            if (!consent) {
-                alert("You must agree to share data");
-                return;
-            }
-            
-            alert("Validation successful! Redirecting to parameter adjustments.");
-            let queryParams = `macroProcessName=${encodeURIComponent(macroProcessName)}&establishmentType=${encodeURIComponent(establishmentType)}&cnpj=${encodeURIComponent(cnpj)}&email=${encodeURIComponent(email)}`;
-            window.location.href = `adjust_parameters.html?${queryParams}`;
+    <label>Establishment CNPJ:</label>
+    <input type="text" id="cnpj" placeholder="Enter CNPJ">
+    
+    <label>Email for Report:</label>
+    <input type="email" id="email" placeholder="Enter email">
+    
+    <label><input type="checkbox" id="consent"> I agree to share data for analysis</label>
+    
+    <button id="validateBtn" onclick="validateInput()">Validate and Proceed</button>
+</div>
+
+<script>
+    let processes = [];
+    let connections = [];
+
+    function loadFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get("data");
+        if (dataParam) {
+            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+            processes = parsedData.processes;
+            connections = parsedData.connections;
+        }
+    }
+    
+    function validateInput() {
+        let macroProcessName = document.getElementById("macroProcessName").value;
+        let cnpj = document.getElementById("cnpj").value;
+        let email = document.getElementById("email").value;
+        let consent = document.getElementById("consent").checked;
+        let establishmentType = document.getElementById("establishmentType").value;
+        
+        if (!macroProcessName) {
+            alert("Macro Process Name is required");
+            return;
+        }
+        if (!validateCNPJ(cnpj)) {
+            alert("Invalid CNPJ");
+            return;
+        }
+        if (!email.includes("@")) {
+            alert("Invalid email");
+            return;
+        }
+        if (!consent) {
+            alert("You must agree to share data");
+            return;
         }
         
-        function validateCNPJ(cnpj) {
-            return /^[0-9]{14}$/.test(cnpj);
-        }
-    </script>
+        alert("Validation successful! Redirecting to parameter adjustments.");
+        let queryParams = `macroProcessName=${encodeURIComponent(macroProcessName)}&establishmentType=${encodeURIComponent(establishmentType)}&cnpj=${encodeURIComponent(cnpj)}&email=${encodeURIComponent(email)}&data=${encodeURIComponent(JSON.stringify({ processes, connections }))}`;
+        window.location.href = `adjust_parameters.html?${queryParams}`;
+    }
+    
+    function validateCNPJ(cnpj) {
+        return /^[0-9]{14}$/.test(cnpj);
+    }
+    
+    window.onload = loadFromURL;
+</script>
+
 </body>
 </html>
