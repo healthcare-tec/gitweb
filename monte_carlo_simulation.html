@@ -1,0 +1,163 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulando o sistema com 5000 tentativas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+        <script src="vis-network.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        canvas { width: 100%; max-width: 1400px; margin-top: 10px; }
+        #processInfo { margin-top: 10px; text-align: left; width: 100%; margin: auto; }
+        .process-box { border: 1px solid gray; padding: 10px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Monte Carlo Simulation - Time Distribution</h2>
+    <canvas id="monteCarloChart"></canvas>
+    <div id="processInfo"></div><script>
+    let processes = [];
+    let connections = [];
+    
+    function loadFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const dataParam = urlParams.get("data");
+
+    if (dataParam) {
+        try {
+            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+
+            processes = parsedData.processes.map(proc => ({
+                id: proc.id,
+                label: proc.label,
+                min: Number(proc.min) || 0,
+                avg: Number(proc.avg) || Number(proc.min),
+                goal: Number(proc.goal) || Number(proc.avg)*2,
+                parallel: Number(proc.parallel) || 1
+            }));
+
+            connections = parsedData.connections.map(conn => ({
+                from: conn.from,
+                to: conn.to,
+                percentage: Number(conn.percentage) || 100  // Default to 100% if missing
+            }));
+
+            console.log("Loaded Processes:", processes);
+            console.log("Loaded Connections:", connections);
+
+            runSimulation();
+            displayProcessInfo();
+        } catch (error) {
+            console.error("Error parsing process data:", error);
+            alert("Failed to load simulation data. Please restart.");
+        }
+    } else {
+        alert("No process data received. Please start from the input module.");
+    }
+    }
+
+    function normalDistribution(mean, sigma) {
+        let u = Math.random();
+        let v = Math.random();
+        let standardNormal = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        return mean + sigma * standardNormal;
+    }
+    
+    function runSimulation() {
+    let simulations = 5000;
+    let results = [];
+
+    for (let i = 0; i < simulations; i++) {
+        let totalTime = 0;
+
+        processes.forEach(proc => {
+            let sigma = (proc.avg - proc.min) / 5;
+            let time = normalDistribution(proc.avg, sigma);
+
+            let outgoingConnections = connections.filter(c => c.from === proc.id);
+            let transitionWeightSum = outgoingConnections.reduce((acc, t) => acc + (Number(t.percentage) || 0), 0);
+
+            // If no outgoing connections, full process execution counts
+            if (outgoingConnections.length === 0) {
+                totalTime += time / proc.parallel;
+            } else {
+                // Adjust time distribution based on transition demand
+                outgoingConnections.forEach(t => {
+                    let demandFactor = (Number(t.percentage) || 100 / outgoingConnections.length) / transitionWeightSum;
+                    totalTime += (time * demandFactor) / proc.parallel;
+                });
+            }
+        });
+
+        results.push(totalTime);
+    }
+
+    plotResults(results);
+    }
+    
+    function plotResults(results) {
+        if (results.length === 0 || results.includes(NaN)) {
+            console.error("Simulation failed: NaN values detected.");
+            alert("Simulation failed due to invalid data.");
+            return;
+        }
+
+        let ctx = document.getElementById("monteCarloChart").getContext("2d");
+        let bins = 20;
+        let maxTime = Math.max(...results);
+        let minTime = Math.min(...results);
+        let step = (maxTime - minTime) / bins;
+        let histogram = new Array(bins).fill(0);
+        
+        results.forEach(time => {
+            let index = Math.floor((time - minTime) / step);
+            if (index >= bins) index = bins - 1;
+            histogram[index]++;
+        });
+        
+        let labels = [...Array(bins).keys()].map(i => (minTime + i * step).toFixed(1));
+        let data = histogram;
+
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Simulated Total Time Distribution",
+                    data: data,
+                    backgroundColor: "rgba(75, 192, 192, 0.6)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, max: Math.max(...data)  }
+                }
+            }
+        });
+    }
+    
+    function displayProcessInfo() {
+        const container = document.getElementById("processInfo");
+        container.innerHTML = "<h3>Process Flow Information</h3>";
+        processes.forEach(({ id, label, min, avg, goal, parallel }) => {
+            const div = document.createElement("div");
+            div.className = "process-box";
+            div.innerHTML = `
+                <strong>${label}</strong><br>
+                Min Time: ${min} min<br>
+                Avg Time: ${avg} min<br>
+                Goal Time: ${goal} min<br>
+                Parallel Processes: ${parallel}
+            `;
+            container.appendChild(div);
+        });
+    }
+    
+    window.onload = loadFromURL;
+</script>
+
+</body>
+</html>
