@@ -18,9 +18,9 @@
         <button onclick="addNode()">➕ Add Process</button>
         <button onclick="finalizeProcess()">✅ Finalize and Start Process Input</button>
     </div><script>
-    /*let nodeIdCounter = 1;*/
+    let nodeIdCounter = 1;
     let edgeIdCounter = 1;
-    /*let nodes = new vis.DataSet([]);*/
+    let nodes = addNode();
     let edges = new vis.DataSet([]);
     
     let container = document.getElementById("network");
