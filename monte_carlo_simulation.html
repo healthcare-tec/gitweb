@@ -95,6 +95,8 @@
 
     plotResults(results);
     }
+    <button onclick="redirectToAdjust()">Adjust Parameters</button>
+    
     
     function plotResults(results) {
         if (results.length === 0 || results.includes(NaN)) {
@@ -155,7 +157,10 @@
             container.appendChild(div);
         });
     }
-    
+    function redirectToAdjust() {
+            let processDataString = encodeURIComponent(JSON.stringify({ processes, connections }));
+            window.location.href = `adjust.html?data=${processDataString}`;
+        }
     window.onload = loadFromURL;
 </script>
 
