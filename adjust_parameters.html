@@ -5,6 +5,7 @@
     <title>Adjust Simulation Parameters</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <script src="vis-network.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         canvas { width: 80%; max-width: 800px; margin-top: 20px; }
@@ -32,6 +33,16 @@
         let establishmentType = urlParams.get("establishmentType");
         let cnpj = urlParams.get("cnpj");
         let email = urlParams.get("email");
+        let dataParam = urlParams.get("data");
+        
+        if (dataParam) {
+            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+            processes = parsedData.processes;
+            connections = parsedData.connections;
+        } else {
+            alert("No process data received. Please start from the validation page.");
+            return;
+        }
         
         document.getElementById("userInfo").innerHTML = `
             <strong>Macro Process:</strong> ${macroProcessName} <br>
@@ -39,21 +50,10 @@
             <strong>CNPJ:</strong> ${cnpj} <br>
             <strong>Email:</strong> ${email}
         `;
+        
+        runSimulation();
     }
     
-    function loadFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const dataParam = urlParams.get("data");
-        if (dataParam) {
-            let parsedData = JSON.parse(decodeURIComponent(dataParam));
-            processes = parsedData.processes;
-            connections = parsedData.connections;
-            runSimulation();
-        } else {
-            alert("No process data received. Please start from the input module.");
-        }
-    }
-
     function runSimulation() {
         let simulations = 1000;
         originalResults = runMonteCarlo(simulations, processes);
@@ -94,7 +94,6 @@
     
     window.onload = function() {
         loadUserData();
-        loadFromURL();
     };
 </script>
 
