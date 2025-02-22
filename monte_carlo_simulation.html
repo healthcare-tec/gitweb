@@ -34,7 +34,7 @@
                 min: Number(proc.min) || 0,
                 avg: Number(proc.avg) || Number(proc.min),
                 goal: Number(proc.goal) || Number(proc.avg)*2,
-                parallel: Number(proc.parallel) || 1
+                parallel: 1 || 1
             }));
 
             connections = parsedData.connections.map(conn => ({
