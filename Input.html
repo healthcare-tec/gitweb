@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,76 +19,78 @@
     <p>Note: In the online version, only the analysis of four processes is enabled.</p>
     <div id="processContainer"></div>
     <button onclick="saveData()">Calcular</button>
-    let processes = [];
-    let connections = [];
-    
-    function loadFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const dataParam = urlParams.get("data");
-        if (dataParam) {
-            let parsedData = JSON.parse(decodeURIComponent(dataParam));
-            processes = parsedData.processes;
-            connections = parsedData.connections;
-            renderForm();
-        } else {
-            alert("No process data received. Please start from the process flow module.");
-        }
-    }
-    
-    function renderForm() {
-        const container = document.getElementById("processContainer");
-        container.innerHTML = "";
-        
-        processes.forEach(({ id, label }) => {
-            const div = document.createElement("div");
-            div.className = "process-box";
-            div.innerHTML = `
-                <h3>${label}</h3>
-                <label>Minimum Time:</label>
-                <input type="number" id="min_${id}" placeholder="Enter minimum time">
-                <label>Most Likely Time:</label>
-                <input type="number" id="avg_${id}" placeholder="Enter average time">
-                <label>Goal Time:</label>
-                <input type="number" id="goal_${id}" placeholder="Enter goal time">
-                <label>Number of Parallel Processes:</label>
-                <input type="number" id="parallel_${id}" placeholder="Enter parallel process count" min="1" value="1">
-                <h4>Transition Percentages:</h4>
-                <div id="connections_${id}"></div>
-            `;
-            container.appendChild(div);
-        });
-        
-        connections.forEach(({ from, to }) => {
-            const fromContainer = document.getElementById(`connections_${from}`);
-            if (fromContainer) {
-                fromContainer.innerHTML += `
-                    <label>Percentage to ${to}:</label>
-                    <input type="number" id="percent_${from}_${to}" placeholder="Enter percentage" min="0" max="100">
-                `;
-            }
-        });
-    }
-    
-    function saveData() {
-        let processData = processes.map(({ id, label }) => ({
-            id,
-            label,
-            min: document.getElementById(`min_${id}`).value,
-            avg: document.getElementById(`avg_${id}`).value,
-            goal: document.getElementById(`goal_${id}`).value,
-            parallel: document.getElementById(`parallel_${id}`).value || 1,  // Default is 1
-            transitions: connections.filter(c => c.from === id).map(c => ({
-                to: c.to,
-                percentage: document.getElementById(`percent_${id}_${c.to}`).value
-            }))
-        }));
 
-        let processDataString = encodeURIComponent(JSON.stringify({ processes: processData, connections }));
-        window.location.href = `monte_carlo_simulation.html?data=${processDataString}`;
-    }
-    
-    window.onload = loadFromURL;
-</script>
+    <script>
+        let processes = [];
+        let connections = [];
+
+        function loadFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get("data");
+            if (dataParam) {
+                let parsedData = JSON.parse(decodeURIComponent(dataParam));
+                processes = parsedData.processes;
+                connections = parsedData.connections;
+                renderForm();
+            } else {
+                alert("No process data received. Please start from the process flow module.");
+            }
+        }
+
+        function renderForm() {
+            const container = document.getElementById("processContainer");
+            container.innerHTML = "";
+
+            processes.forEach(({ id, label }) => {
+                const div = document.createElement("div");
+                div.className = "process-box";
+                div.innerHTML = `
+                    <h3>${label}</h3>
+                    <label>Minimum Time:</label>
+                    <input type="number" id="min_${id}" placeholder="Enter minimum time">
+                    <label>Most Likely Time:</label>
+                    <input type="number" id="avg_${id}" placeholder="Enter average time">
+                    <label>Goal Time:</label>
+                    <input type="number" id="goal_${id}" placeholder="Enter goal time">
+                    <label>Number of Parallel Processes:</label>
+                    <input type="number" id="parallel_${id}" placeholder="Enter parallel process count" min="1" value="1">
+                    <h4>Transition Percentages:</h4>
+                    <div id="connections_${id}"></div>
+                `;
+                container.appendChild(div);
+            });
+
+            connections.forEach(({ from, to }) => {
+                const fromContainer = document.getElementById(`connections_${from}`);
+                if (fromContainer) {
+                    fromContainer.innerHTML += `
+                        <label>Percentage to ${to}:</label>
+                        <input type="number" id="percent_${from}_${to}" placeholder="Enter percentage" min="0" max="100">
+                    `;
+                }
+            });
+        }
+
+        function saveData() {
+            let processData = processes.map(({ id, label }) => ({
+                id,
+                label,
+                min: Number(document.getElementById(`min_${id}`).value) || 0,
+                avg: Number(document.getElementById(`avg_${id}`).value) || 0,
+                goal: Number(document.getElementById(`goal_${id}`).value) || 0,
+                parallel: Number(document.getElementById(`parallel_${id}`).value) || 1, // Default to 1
+                transitions: connections.filter(c => c.from === id).map(c => ({
+                    to: c.to,
+                    percentage: Number(document.getElementById(`percent_${id}_${c.to}`).value) || 100 / connections.length
+                }))
+            }));
+
+            let processDataString = encodeURIComponent(JSON.stringify({ processes: processData, connections }));
+            window.location.href = `monte_carlo_simulation.html?data=${processDataString}`;
+        }
+
+        window.onload = loadFromURL;
+    </script>
 
 </body>
 </html>
