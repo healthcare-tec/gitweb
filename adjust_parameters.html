@@ -93,7 +93,7 @@
         let simulations = 5000;
         originalResults = runMonteCarlo(simulations, processes);
         let criticalPath = identifyCriticalPath(); 
-        /*optimizedResults = applyOptimization(originalResults, criticalPath);*/
+        optimizedResults = applyOptimization(originalResults, criticalPath);
         optimizedResults = runMonteCarlo(simulations, processes_opt);        
         plotResults();
     }
@@ -128,7 +128,7 @@
     }
 
     function applyOptimization(results, criticalPath) {
-        return results.map(time => time * 0.9); // Reduce total time by 10%
+        return results.map(time => time * 1); // No redution in time
     }
 
     function plotResults() {
