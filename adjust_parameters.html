@@ -41,23 +41,50 @@
     let connections = [];
     let originalResults = [];
     let adjustedResults = [];
-    
     function loadUserData() {
-        const urlParams = new URLSearchParams(window.location.search);
-        let macroProcessName = urlParams.get("macroProcessName");
-        let establishmentType = urlParams.get("establishmentType");
-        let cnpj = urlParams.get("cnpj");
-        let email = urlParams.get("email");
-        let dataParam = urlParams.get("data");
-        
-        if (dataParam) {
-            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+    const debugDiv = document.createElement('div');
+    debugDiv.id = 'debugInfo';
+    debugDiv.style.border = '1px solid red';
+    debugDiv.style.padding = '10px';
+    document.body.appendChild(debugDiv);
+
+    function logDebug(message) {
+        const p = document.createElement('p');
+        p.textContent = message;
+        debugDiv.appendChild(p);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const macroProcessName = urlParams.get("macroProcessName");
+    const establishmentType = urlParams.get("establishmentType");
+    const cnpj = urlParams.get("cnpj");
+    const email = urlParams.get("email");
+    const dataParam = urlParams.get("data");
+
+    logDebug(`macroProcessName: ${macroProcessName}`);
+    logDebug(`establishmentType: ${establishmentType}`);
+    logDebug(`cnpj: ${cnpj}`);
+    logDebug(`email: ${email}`);
+    logDebug(`dataParam: ${dataParam}`);
+
+    if (dataParam) {
+        try {
+            const parsedData = JSON.parse(decodeURIComponent(dataParam));
             processes = parsedData.processes;
             connections = parsedData.connections;
-        } else {
-            alert("No process data received. Please start from the validation page.");
-            return;
+
+            logDebug(`Processes: ${JSON.stringify(processes)}`);
+            logDebug(`Connections: ${JSON.stringify(connections)}`);
+        } catch (error) {
+            logDebug(`Error parsing dataParam: ${error}`);
         }
+    } else {
+        logDebug('No dataParam found in URL.');
+    }
+}
+
+        
+    
         
         document.getElementById("userInfo").innerHTML = `
             <strong>Macro Process:</strong> ${macroProcessName} <br>
