@@ -1,14 +1,15 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adjust Simulation Parameters</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
-    <script src="vis-network.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         canvas { width: 80%; max-width: 800px; margin-top: 20px; }
+        #userHeader { text-align: left; width: 80%; margin: auto; padding: 10px; border-bottom: 2px solid black; }
         #processInfo { margin-top: 20px; text-align: left; width: 80%; margin: auto; }
         .process-box { border: 1px solid gray; padding: 10px; margin: 10px; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
@@ -18,10 +19,16 @@
     </style>
 </head>
 <body>
+    <div id="userHeader">
+        <h3>User Information</h3>
+        <p><strong>Macro Process:</strong> <span id="macroProcessName"></span></p>
+        <p><strong>Type:</strong> <span id="establishmentType"></span></p>
+        <p><strong>CNPJ:</strong> <span id="cnpj"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+    </div>
+    
     <h2>Adjust Simulation Parameters</h2>
-    <p id="userInfo"></p>
-    <canvas id="monteCarloChartBase"></canvas>
-    <canvas id="monteCarloChartAdjusted" style="position: absolute; top: 0; left: 0; opacity: 0.6;"></canvas>
+    <canvas id="monteCarloChart"></canvas>
     <div id="processInfo"></div>
     <table id="processTable">
         <thead>
@@ -34,132 +41,115 @@
             </tr>
         </thead>
         <tbody></tbody>
-    </table><button id="sendReport" onclick="sendReport()">Send Report</button>
-
-<script>
-    let processes = [];
-    let connections = [];
-    let originalResults = [];
-    let adjustedResults = [];
-    function loadUserData() {
-    const debugDiv = document.createElement('div');
-    debugDiv.id = 'debugInfo';
-    debugDiv.style.border = '1px solid red';
-    debugDiv.style.padding = '10px';
-    document.body.appendChild(debugDiv);
-
-    function logDebug(message) {
-        const p = document.createElement('p');
-        p.textContent = message;
-        debugDiv.appendChild(p);
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const macroProcessName = urlParams.get("macroProcessName");
-    const establishmentType = urlParams.get("establishmentType");
-    const cnpj = urlParams.get("cnpj");
-    const email = urlParams.get("email");
-    const dataParam = urlParams.get("data");
-
-    logDebug(`macroProcessName: ${macroProcessName}`);
-    logDebug(`establishmentType: ${establishmentType}`);
-    logDebug(`cnpj: ${cnpj}`);
-    logDebug(`email: ${email}`);
-    logDebug(`dataParam: ${dataParam}`);
-
-    if (dataParam) {
-        try {
-            const parsedData = JSON.parse(decodeURIComponent(dataParam));
-            processes = parsedData.processes;
-            connections = parsedData.connections;
-
-            logDebug(`Processes: ${JSON.stringify(processes)}`);
-            logDebug(`Connections: ${JSON.stringify(connections)}`);
-        } catch (error) {
-            logDebug(`Error parsing dataParam: ${error}`);
+    </table>
+    
+    <button id="sendReport" onclick="sendReport()">Send Report</button>
+    
+    <script>
+        let processes = [];
+        let connections = [];
+        let originalResults = [];
+        let optimizedResults = [];
+        
+        function loadUserData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            document.getElementById("macroProcessName").textContent = urlParams.get("macroProcessName") || "N/A";
+            document.getElementById("establishmentType").textContent = urlParams.get("establishmentType") || "N/A";
+            document.getElementById("cnpj").textContent = urlParams.get("cnpj") || "N/A";
+            document.getElementById("email").textContent = urlParams.get("email") || "N/A";
+            
+            let dataParam = urlParams.get("data");
+            if (dataParam) {
+                let parsedData = JSON.parse(decodeURIComponent(dataParam));
+                processes = parsedData.processes;
+                connections = parsedData.connections;
+            } else {
+                alert("No process data received. Please start from the validation page.");
+                return;
+            }
+            
+            renderProcessTable();
+            runSimulation();
         }
-    } else {
-        logDebug('No dataParam found in URL.');
-    }
-}
-
         
-    
-        
-        document.getElementById("userInfo").innerHTML = `
-            <strong>Macro Process:</strong> ${macroProcessName} <br>
-            <strong>Type:</strong> ${establishmentType} <br>
-            <strong>CNPJ:</strong> ${cnpj} <br>
-            <strong>Email:</strong> ${email}
-        `;
-        
-        renderProcessTable();
-        runSimulation();
-    }
-    
-    function renderProcessTable() {
-        const tableBody = document.getElementById("processTable").getElementsByTagName("tbody")[0];
-        tableBody.innerHTML = "";
-        processes.forEach(({ id, label, min, avg, goal, parallel }) => {
-            let row = tableBody.insertRow();
-            row.innerHTML = `
-                <td>${label}</td>
-                <td>${min} min</td>
-                <td>${avg} min</td>
-                <td>${goal} min</td>
-                <td>${parallel}</td>
-            `;
-        });
-    }
-    
-    function runSimulation() {
-        let simulations = 1000;
-        originalResults = runMonteCarlo(simulations, processes);
-        adjustedResults = [...originalResults];
-        plotResults();
-    }
-
-    function runMonteCarlo(simulations, processList) {
-        let results = [];
-        for (let i = 0; i < simulations; i++) {
-            let totalTime = 0;
-            processList.forEach(proc => {
-                let sigma = (proc.avg - proc.min) / 5;
-                let time = normalDistribution(proc.avg, sigma);
-                totalTime += time / proc.parallel;
+        function renderProcessTable() {
+            const tableBody = document.querySelector("#processTable tbody");
+            tableBody.innerHTML = "";
+            processes.forEach(({ id, label, min, avg, goal, parallel }) => {
+                let row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${label}</td>
+                    <td>${min} min</td>
+                    <td>${avg} min</td>
+                    <td>${goal} min</td>
+                    <td>${parallel}</td>
+                `;
             });
-            results.push(totalTime);
         }
-        return results;
-    }
-
-    function plotResults() {
-        let ctxBase = document.getElementById("monteCarloChartBase").getContext("2d");
-        let ctxAdj = document.getElementById("monteCarloChartAdjusted").getContext("2d");
-        let bins = 20;
-        let labels = generateBins(originalResults, bins);
         
-        new Chart(ctxBase, {
-            type: "bar",
-            data: { labels, datasets: [{ label: "Original", data: binData(originalResults, bins), backgroundColor: "rgba(75, 192, 192, 0.6)" }] }
-        });
-        
-        new Chart(ctxAdj, {
-            type: "bar",
-            data: { labels, datasets: [{ label: "Adjusted", data: binData(adjustedResults, bins), backgroundColor: "rgba(255, 99, 132, 0.4)" }] }
-        });
-    }
-    
-    function sendReport() {
-        let urlParams = new URLSearchParams(window.location.search);
-        let userEmail = urlParams.get("email");
-        alert(`Report sent to ${userEmail} and a copy to cadastro@outlook.com`);
-    }
-    
-    window.onload = function() {
-        loadUserData();
-    };
-</script>
+        function runSimulation() {
+            let simulations = 1000;
+            originalResults = runMonteCarlo(simulations, processes);
+            let criticalPath = identifyCriticalPath();
+            optimizedResults = applyOptimization(originalResults, criticalPath);
+            plotResults();
+        }
 
+        function runMonteCarlo(simulations, processList) {
+            let results = [];
+            for (let i = 0; i < simulations; i++) {
+                let totalTime = 0;
+                processList.forEach(proc => {
+                    let sigma = (proc.avg - proc.min) / 5;
+                    let time = normalDistribution(proc.avg, sigma);
+                    totalTime += time / proc.parallel;
+                });
+                results.push(totalTime);
+            }
+            return results;
+        }
+
+        function identifyCriticalPath() {
+            return processes.map(proc => proc.id); // Placeholder: All processes considered critical
+        }
+
+        function applyOptimization(results, criticalPath) {
+            return results.map(time => time * 0.9); // Reduce total time by 10%
+        }
+
+        function plotResults() {
+            let ctx = document.getElementById("monteCarloChart").getContext("2d");
+            let bins = 20;
+            let labels = generateBins(originalResults, bins);
+            
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: "Original Time Distribution",
+                            data: binData(originalResults, bins),
+                            backgroundColor: "rgba(75, 192, 192, 0.6)"
+                        },
+                        {
+                            label: "Optimized Time Distribution",
+                            data: binData(optimizedResults, bins),
+                            backgroundColor: "rgba(255, 99, 132, 0.6)"
+                        }
+                    ]
+                }
+            });
+        }
+        
+        function sendReport() {
+            let userEmail = document.getElementById("email").textContent;
+            alert(`Report sent to ${userEmail} and a copy to cadastro@outlook.com`);
+        }
+        
+        window.onload = function() {
+            loadUserData();
+        };
+    </script>
 </body>
 </html>
