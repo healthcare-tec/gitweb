@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        canvas { display: block; width: 100%; max-width: 800px; margin-top: 20px; height: auto;}
+        canvas { width: 80%; max-width: 800px; margin-top: 20px; }
         #userHeader { text-align: left; width: 80%; margin: auto; padding: 10px; border-bottom: 2px solid black; }
         table { width: 80%; margin: auto; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid black; padding: 8px; text-align: left; }
@@ -74,7 +74,8 @@
                 <td><input type="number" value="${proc.min}" id="min_${proc.id}"></td>
                 <td><input type="number" value="${proc.avg}" id="avg_${proc.id}"></td>
                 <td><input type="number" value="${proc.goal}" id="goal_${proc.id}"></td>
-                <td><input type="number" value="${proc.parallel}" id="parallel_${proc.id}"></td> `;
+                <td><input type="number" value="${proc.parallel}" id="parallel_${proc.id}"></td>
+            `;
             tableBody.appendChild(row);
         });
     }
@@ -90,14 +91,11 @@
         let simulations = 1000;
         originalResults = runMonteCarlo(simulations, processes);
         let criticalPath = identifyCriticalPath();
-				console.log("Original Results:", originalResults);
-				console.log("Optimized Results:", optimizedResults);
         optimizedResults = applyOptimization(originalResults, criticalPath);
         plotResults();
     }
 
     function updateParameters() {
-				 console.log("Função atualizar acionada");
         processes.forEach(proc => {
             proc.min = parseFloat(document.getElementById(`min_${proc.id}`).value) || 0;
             proc.avg = parseFloat(document.getElementById(`avg_${proc.id}`).value) || 0;
@@ -221,7 +219,6 @@
 
     window.onload = function() {
         loadUserData();
-				
     };
 </script>
 
