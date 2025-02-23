@@ -96,6 +96,7 @@
     }
 
     function updateParameters() {
+				 console.log("Função atualizar acionada");
         processes.forEach(proc => {
             proc.min = parseFloat(document.getElementById(`min_${proc.id}`).value) || 0;
             proc.avg = parseFloat(document.getElementById(`avg_${proc.id}`).value) || 0;
