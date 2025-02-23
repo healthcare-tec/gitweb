@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,202 +21,206 @@
         <p><strong>Tipo de Estabelecimento:</strong> <span id="establishmentType"></span></p>
         <p><strong>CNPJ:</strong> <span id="cnpj"></span></p>
         <p><strong>Email:</strong> <span id="email"></span></p>
-    </div>
-    
-    <h2>Distribuição de Tempo da Simulação</h2>
-    <canvas id="monteCarloChart"></canvas>
+    </div><h2>Distribuição de Tempo da Simulação</h2>
+<canvas id="monteCarloChart"></canvas>
 
-    <h3>Ajuste de Parâmetros</h3>
-    <table id="processTable">
-        <thead>
-            <tr>
-                <th>Processo</th>
-                <th>Tempo Mínimo</th>
-                <th>Tempo Médio</th>
-                <th>Tempo Meta</th>
-                <th>Paralelo</th>
-            </tr>
-        </thead>
-        <tbody id="processTableBody">
-        </tbody>
-    </table>
-    <button onclick="updateParameters()">Atualizar Parâmetros</button>
+<h3>Ajuste de Parâmetros</h3>
+<table id="processTable">
+    <thead>
+        <tr>
+            <th>Processo</th>
+            <th>Tempo Mínimo</th>
+            <th>Tempo Médio</th>
+            <th>Tempo Meta</th>
+            <th>Paralelo</th>
+        </tr>
+    </thead>
+    <tbody id="processTableBody">
+    </tbody>
+</table>
+<button id="updateButton" onclick="updateParameters()">Atualizar Parâmetros</button>
 
-    <script>
-        let processes = [];
-        let originalResults = [];
-        let optimizedResults = [];
+<script>
+    let processes = [];
+    let originalResults = [];
+    let optimizedResults = [];
 
-        function loadUserData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            document.getElementById("macroProcessName").textContent = urlParams.get("macroProcessName") || "N/A";
-            document.getElementById("establishmentType").textContent = urlParams.get("establishmentType") || "N/A";
-            document.getElementById("cnpj").textContent = urlParams.get("cnpj") || "N/A";
-            document.getElementById("email").textContent = urlParams.get("email") || "N/A";
+    function loadUserData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById("macroProcessName").textContent = urlParams.get("macroProcessName") || "N/A";
+        document.getElementById("establishmentType").textContent = urlParams.get("establishmentType") || "N/A";
+        document.getElementById("cnpj").textContent = urlParams.get("cnpj") || "N/A";
+        document.getElementById("email").textContent = urlParams.get("email") || "N/A";
 
-            let dataParam = urlParams.get("data");
-            if (dataParam) {
-                let parsedData = JSON.parse(decodeURIComponent(dataParam));
-                processes = parsedData.processes;
-            } else {
-                alert("Nenhum dado de processo recebido.");
-                return;
-            }
-            renderProcessTable();
-            runSimulation();
+        let dataParam = urlParams.get("data");
+        if (dataParam) {
+            let parsedData = JSON.parse(decodeURIComponent(dataParam));
+            processes = parsedData.processes;
+        } else {
+            alert("Nenhum dado de processo recebido.");
+            return;
         }
+        renderProcessTable();
+        runSimulation();
+    }
 
-        function renderProcessTable() {
-            const tableBody = document.getElementById("processTableBody");
-            tableBody.innerHTML = "";
-            processes.forEach(proc => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${proc.label}</td>
-                    <td><input type="number" value="${proc.min}" id="min_${proc.id}"></td>
-                    <td><input type="number" value="${proc.avg}" id="avg_${proc.id}"></td>
-                    <td><input type="number" value="${proc.goal}" id="goal_${proc.id}"></td>
-                    <td><input type="number" value="${proc.parallel}" id="parallel_${proc.id}"></td>
-                `;
-                tableBody.appendChild(row);
+    function renderProcessTable() {
+        const tableBody = document.getElementById("processTableBody");
+        tableBody.innerHTML = "";
+        processes.forEach(proc => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${proc.label}</td>
+                <td><input type="number" value="${proc.min}" id="min_${proc.id}"></td>
+                <td><input type="number" value="${proc.avg}" id="avg_${proc.id}"></td>
+                <td><input type="number" value="${proc.goal}" id="goal_${proc.id}"></td>
+                <td><input type="number" value="${proc.parallel}" id="parallel_${proc.id}"></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function normalDistribution(mean, sigma) {
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+        return mean + z0 * sigma;
+    }
+
+    function runSimulation() {
+        let simulations = 1000;
+        originalResults = runMonteCarlo(simulations, processes);
+        let criticalPath = identifyCriticalPath();
+        optimizedResults = applyOptimization(originalResults, criticalPath);
+        plotResults();
+    }
+
+    function updateParameters() {
+        processes.forEach(proc => {
+            proc.min = parseFloat(document.getElementById(`min_${proc.id}`).value) || 0;
+            proc.avg = parseFloat(document.getElementById(`avg_${proc.id}`).value) || 0;
+            proc.goal = parseFloat(document.getElementById(`goal_${proc.id}`).value) || 0;
+            proc.parallel = parseInt(document.getElementById(`parallel_${proc.id}`).value) || 1;
+        });
+        console.log("Parâmetros atualizados:", processes);
+        runSimulation();
+    }
+
+    function runMonteCarlo(simulations, processList) {
+        let results = [];
+        for (let i = 0; i < simulations; i++) {
+            let totalTime = 0;
+            processList.forEach(proc => {
+                let sigma = (proc.avg - proc.min) / 5;
+                let time = normalDistribution(proc.avg, sigma);
+                totalTime += time / proc.parallel;
             });
+            results.push(totalTime);
+        }
+        return results;
+    }
+
+    function identifyCriticalPath() {
+        return processes.map(proc => proc.id); // Placeholder: All processes considered critical
+    }
+
+    function applyOptimization(results, criticalPath) {
+        return results.map(time => time * 0.9); // Reduce total time by 10%
+    }
+
+    function plotResults() {
+        let ctx = document.getElementById("monteCarloChart").getContext("2d");
+        let bins = 20;
+        let labels = generateBins(originalResults, bins);
+
+        if (window.myChart) {
+            window.myChart.destroy();
         }
 
-        function normalDistribution(mean, sigma) {
-            const u1 = Math.random();
-            const u2 = Math.random();
-            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return mean + z0 * sigma;
-        }
-
-        function runSimulation() {
-            let simulations = 1000;
-            originalResults = runMonteCarlo(simulations, processes);
-            let criticalPath = identifyCriticalPath();
-            optimizedResults = applyOptimization(originalResults, criticalPath);
-            plotResults();
-        }
-
-        function updateParameters() {
-            processes.forEach(proc => {
-                proc.min = parseFloat(document.getElementById(`min_${proc.id}`).value) || 0;
-                proc.avg = parseFloat(document.getElementById(`avg_${proc.id}`).value) || 0;
-                proc.goal = parseFloat(document.getElementById(`goal_${proc.id}`).value) || 0;
-                proc.parallel = parseInt(document.getElementById(`parallel_${proc.id}`).value) || 1;
-            });
-            runSimulation();
-        }
-
-        function runMonteCarlo(simulations, processList) {
-            let results = [];
-            for (let i = 0; i < simulations; i++) {
-                let totalTime = 0;
-                processList.forEach(proc => {
-                    let sigma = (proc.avg - proc.min) / 5;
-                    let time = normalDistribution(proc.avg, sigma);
-                    totalTime += time / proc.parallel;
-                });
-                results.push(totalTime);
-            }
-            return results;
-        }
-
-        function identifyCriticalPath() {
-            return processes.map(proc => proc.id); // Placeholder: All processes considered critical
-        }
-
-        function applyOptimization(results, criticalPath) {
-            return results.map(time => time * 0.9); // Reduce total time by 10%
-        }
-
-        function plotResults() {
-            let ctx = document.getElementById("monteCarloChart").getContext("2d");
-            let bins = 20;
-            let labels = generateBins(originalResults, bins);
-
-            new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels,
-                    datasets: [
-                        {
-                            label: "Distribuição de Tempo Original",
-                            data: binData(originalResults, bins),
-                            backgroundColor: "rgba(75, 192, 192, 0.6)"
-                        },
-                        {
-                            label: "Distribuição de Tempo Otimizada",
-                            data: binData(optimizedResults, bins),
-                            backgroundColor: "rgba(153, 102, 255, 0.4)",
-                            borderColor: "rgba(153, 102, 255, 1)",
-                            borderWidth: 1,
-                            fill: true
-                        }
-                    ]
+        window.myChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Distribuição de Tempo Original",
+                        data: binData(originalResults, bins),
+                        backgroundColor: "rgba(75, 192, 192, 0.6)"
+                    },
+                    {
+                        label: "Distribuição de Tempo Otimizada",
+                        data: binData(optimizedResults, bins),
+                        backgroundColor: "rgba(153, 102, 255, 0.4)",
+                        borderColor: "rgba(153, 102, 255, 1)",
+                        borderWidth: 1,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Comparação de Duração do Projeto"
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        display: true,
                         title: {
                             display: true,
-                            text: "Comparação de Duração do Projeto"
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
+                            text: 'Atividades'
                         }
                     },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
-                    },
-                    scales: {
-                        x: {
+                    y: {
+                        display: true,
+                        title: {
                             display: true,
-                            title: {
-                                display: true,
-                                text: 'Atividades'
-                            }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Duração (minutos)'
-                            }
+                            text: 'Duração (minutos)'
                         }
                     }
                 }
-            });
-        }
-
-        function generateBins(data, numBins) {
-            const min = Math.min(...data);
-            const max = Math.max(...data);
-            const binWidth = (max - min) / numBins;
-            const bins = [];
-            for (let i = 0; i <= numBins; i++) {
-                bins.push(min + i * binWidth);
             }
-            return bins;
-        }
+        });
+    }
 
-        function binData(data, numBins) {
-            const min = Math.min(...data);
-            const max = Math.max(...data);
-            const binWidth = (max - min) / numBins;
-            const bins = new Array(numBins).fill(0);
-            data.forEach(value => {
-                const binIndex = Math.floor((value - min) / binWidth);
-                bins[Math.min(binIndex, numBins - 1)]++;
-            });
-            return bins;
+    function generateBins(data, numBins) {
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const binWidth = (max - min) / numBins;
+        const bins = [];
+        for (let i = 0; i <= numBins; i++) {
+            bins.push(min + i * binWidth);
         }
+        return bins;
+    }
 
-        window.onload = function() {
-            loadUserData();
-        };
-    </script>
+    function binData(data, numBins) {
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const binWidth = (max - min) / numBins;
+        const bins = new Array(numBins).fill(0);
+        data.forEach(value => {
+            const binIndex = Math.floor((value - min) / binWidth);
+            bins[Math.min(binIndex, numBins - 1)]++;
+        });
+        return bins;
+    }
+
+    window.onload = function() {
+        loadUserData();
+    };
+</script>
+
 </body>
 </html>
