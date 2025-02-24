@@ -61,7 +61,7 @@
             alert("Nenhum dado de processo recebido.");
             return;
         }
-        let processes_opt = JSON.parse(JSON.stringify(processes));
+        processes_opt = JSON.parse(JSON.stringify(processes));
         renderProcessTable();
         runSimulation();
     }
