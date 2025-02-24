@@ -93,7 +93,7 @@
         let simulations = 5000;
         originalResults = runMonteCarlo(simulations, processes);
         let criticalPath = identifyCriticalPath(); 
-        optimizedResults = applyOptimization(originalResults, criticalPath);
+        applyOptimization(originalResults, criticalPath);
         optimizedResults = runMonteCarlo(simulations, processes_opt);        
         plotResults();
     }
