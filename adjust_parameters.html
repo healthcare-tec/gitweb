@@ -166,14 +166,36 @@ function plotResults() {
             }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Distribuição de Tempo Original"
+    responsive: true,
+    plugins: {
+        title: {
+            display: true,
+            text: "Distribuição de Tempo Original"
+        }
+    },
+    scales: {
+        x: {
+            display: true,
+            title: {
+                display: true,
+                text: 'Duração (minutos)'
+            },
+            ticks: {
+                callback: function(value) {
+                    return parseFloat(value).toFixed(2); // Arredonda para 2 casas decimais
                 }
             }
+        },
+        y: {
+            display: true,
+            title: {
+                display: true,
+                text: 'Frequência'
+            }
         }
+    }
+}
+
     });
 
     // Plotar o gráfico otimizado
@@ -191,14 +213,36 @@ function plotResults() {
             }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Distribuição de Tempo Otimizada"
+    responsive: true,
+    plugins: {
+        title: {
+            display: true,
+            text: "Distribuição de Tempo Original"
+        }
+    },
+    scales: {
+        x: {
+            display: true,
+            title: {
+                display: true,
+                text: 'Duração (minutos)'
+            },
+            ticks: {
+                callback: function(value) {
+                    return parseFloat(value).toFixed(2); // Arredonda para 2 casas decimais
                 }
             }
+        },
+        y: {
+            display: true,
+            title: {
+                display: true,
+                text: 'Frequência'
+            }
         }
+    }
+}
+
     });
 }
 
