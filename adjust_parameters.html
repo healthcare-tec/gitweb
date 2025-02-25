@@ -21,8 +21,12 @@
         <p><strong>Tipo de Estabelecimento:</strong> <span id="establishmentType"></span></p>
         <p><strong>CNPJ:</strong> <span id="cnpj"></span></p>
         <p><strong>Email:</strong> <span id="email"></span></p>
-    </div><h2>Distribuição de Tempo da Simulação</h2>
-<canvas id="monteCarloChart"></canvas>
+ 
+<h2>Distribuição de Tempo Original</h2>
+<canvas id="originalChart"></canvas>
+
+<h2>Distribuição de Tempo Otimizada</h2>
+<canvas id="optimizedChart"></canvas>
 
 <h3>Ajuste de Parâmetros</h3>
 <table id="processTable">
@@ -131,7 +135,77 @@
         return results.map(time => time * 1); // No redution in time
     }
 
-    function plotResults() {
+
+
+function plotResults() {
+    let ctxOriginal = document.getElementById("originalChart").getContext("2d");
+    let ctxOptimized = document.getElementById("optimizedChart").getContext("2d");
+    let bins = 20;
+    
+    // Gerar bins para cada conjunto de resultados
+    let originalLabels = generateBins(originalResults, bins);
+    let optimizedLabels = generateBins(optimizedResults, bins);
+
+    // Verifica se gráficos antigos existem e destrói
+    if (window.myOriginalChart) {
+        window.myOriginalChart.destroy();
+    }
+    if (window.myOptimizedChart) {
+        window.myOptimizedChart.destroy();
+    }
+
+    // Plotar o gráfico original
+    window.myOriginalChart = new Chart(ctxOriginal, {
+        type: "bar",
+        data: {
+            labels: originalLabels,
+            datasets: [{
+                label: "Distribuição de Tempo Original",
+                data: binData(originalResults, bins),
+                backgroundColor: "rgba(75, 192, 192, 0.6)"
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Distribuição de Tempo Original"
+                }
+            }
+        }
+    });
+
+    // Plotar o gráfico otimizado
+    window.myOptimizedChart = new Chart(ctxOptimized, {
+        type: "bar",
+        data: {
+            labels: optimizedLabels,
+            datasets: [{
+                label: "Distribuição de Tempo Otimizada",
+                data: binData(optimizedResults, bins),
+                backgroundColor: "rgba(153, 102, 255, 0.4)",
+                borderColor: "rgba(153, 102, 255, 1)",
+                borderWidth: 1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Distribuição de Tempo Otimizada"
+                }
+            }
+        }
+    });
+}
+
+
+
+    
+    function plotResultsX() {
         let ctx = document.getElementById("monteCarloChart").getContext("2d");
         let bins = 20;
         let labels = generateBins(originalResults, bins);
