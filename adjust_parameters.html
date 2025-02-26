@@ -92,38 +92,49 @@
             });
         }
 
-        function normalDistribution(mean, sigma) {
-            const u1 = Math.random();
-            const u2 = Math.random();
-            const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            return mean + z0 * sigma;
-        }
-
         function runSimulation() {
             let simulations = 5000;
             originalResults = runMonteCarlo(simulations, processes);
+            optimizedResults = runMonteCarlo(simulations, processes_opt);
+            plotResults();
         }
 
-        function updateParameters() {
-            processes_opt.forEach(proc => {
-                proc.min = parseFloat(document.getElementById(`min_${proc.id}`).value) || 0;
-                proc.avg = parseFloat(document.getElementById(`avg_${proc.id}`).value) || 0;
-                proc.goal = parseFloat(document.getElementById(`goal_${proc.id}`).value) || 0;
-                proc.parallel = parseInt(document.getElementById(`parallel_${proc.id}`).value) || 1;
+        function plotResults() {
+            let ctxOriginal = document.getElementById("originalChart").getContext("2d");
+            let ctxOptimized = document.getElementById("optimizedChart").getContext("2d");
+            
+            if (window.myOriginalChart) window.myOriginalChart.destroy();
+            if (window.myOptimizedChart) window.myOptimizedChart.destroy();
+            
+            window.myOriginalChart = new Chart(ctxOriginal, {
+                type: "bar",
+                data: {
+                    labels: ["Simulação"],
+                    datasets: [{
+                        label: "Distribuição de Tempo Original",
+                        data: [Math.max(...originalResults)],
+                        backgroundColor: "rgba(75, 192, 192, 0.6)"
+                    }]
+                }
             });
-            console.log("Parâmetros atualizados:", processes_opt);
-            runSimulation();
+            
+            window.myOptimizedChart = new Chart(ctxOptimized, {
+                type: "bar",
+                data: {
+                    labels: ["Simulação"],
+                    datasets: [{
+                        label: "Distribuição de Tempo Otimizada",
+                        data: [Math.max(...optimizedResults)],
+                        backgroundColor: "rgba(153, 102, 255, 0.6)"
+                    }]
+                }
+            });
         }
 
         function runMonteCarlo(simulations, processList) {
             let results = [];
             for (let i = 0; i < simulations; i++) {
-                let totalTime = 0;
-                processList.forEach(proc => {
-                    let sigma = Math.max((proc.avg - proc.min) / 5, 0.01);
-                    let time = Math.max(normalDistribution(proc.avg, sigma), proc.min);
-                    totalTime += time / proc.parallel;
-                });
+                let totalTime = processList.reduce((sum, proc) => sum + proc.avg / proc.parallel, 0);
                 results.push(totalTime);
             }
             return results;
