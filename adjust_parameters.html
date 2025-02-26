@@ -97,7 +97,12 @@
         let simulations = 5000;
         originalResults = runMonteCarlo(simulations, processes);
         let criticalPath = identifyCriticalPath(); 
-        applyOptimization(originalResults, criticalPath);
+      //  applyOptimization(originalResults, criticalPath);
+      //  optimizedResults = runMonteCarlo(simulations, processes_opt);        
+    }
+
+        function runSimulation_opt() {
+        let simulations = 5000;
         optimizedResults = runMonteCarlo(simulations, processes_opt);        
         plotResults();
     }
@@ -110,7 +115,7 @@
             proc.parallel = parseInt(document.getElementById(`parallel_${proc.id}`).value) || 1;
         });
         console.log("Parâmetros atualizados:", processes_opt);
-        runSimulation();
+        runSimulation_opt();
     }
 
     function runMonteCarlo(simulations, processList) {
@@ -129,7 +134,7 @@
 
     function identifyCriticalPath() {
         return processes.map(proc => proc.id); // Placeholder: All processes considered critical
-    }
+    } print("Caminho crítico: ", processes.map )
 
     function applyOptimization(results, criticalPath) {
         return results.map(time => time * 1); // No redution in time
@@ -139,7 +144,7 @@
 
 function plotResults() {
     let ctxOriginal = document.getElementById("originalChart").getContext("2d");
-    window.myOptimizedChart = null; // Força a reinicialização completa
+//    window.myOptimizedChart = null; // Força a reinicialização completa
     let ctxOptimized = document.getElementById("optimizedChart").getContext("2d");
     let bins = 20;
     
