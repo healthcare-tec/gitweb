@@ -139,6 +139,7 @@
 
 function plotResults() {
     let ctxOriginal = document.getElementById("originalChart").getContext("2d");
+    window.myOptimizedChart = null; // Força a reinicialização completa
     let ctxOptimized = document.getElementById("optimizedChart").getContext("2d");
     let bins = 20;
     
@@ -152,8 +153,7 @@ function plotResults() {
     }
     if (window.myOptimizedChart) {
         window.myOptimizedChart.destroy();
-        window.myOptimizedChart = null; // Força a reinicialização completa
-    }
+      }
 
     // Plotar o gráfico original
     window.myOriginalChart = new Chart(ctxOriginal, {
@@ -248,7 +248,7 @@ function plotResults() {
 }
 
 
-
+/* Código velho
     
     function plotResultsX() {
         let ctx = document.getElementById("monteCarloChart").getContext("2d");
@@ -342,7 +342,10 @@ function plotResults() {
     window.onload = function() {
         loadUserData();
     };
+*/
+    
 </script>
+        
 
 </body>
 </html>
