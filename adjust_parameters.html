@@ -152,6 +152,7 @@ function plotResults() {
     }
     if (window.myOptimizedChart) {
         window.myOptimizedChart.destroy();
+        window.myOptimizedChart = null; // Força a reinicialização completa
     }
 
     // Plotar o gráfico original
