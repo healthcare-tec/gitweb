@@ -59,23 +59,37 @@
             document.getElementById("cnpj").textContent = urlParams.get("cnpj") || "N/A";
             document.getElementById("email").textContent = urlParams.get("email") || "N/A";
 
-            let dataParam = urlParams.get("data");
-            try {
-                let parsedData = JSON.parse(decodeURIComponent(dataParam));
-                if (!parsedData.processes || !Array.isArray(parsedData.processes)) {
-                    throw new Error("Estrutura inválida: processes não encontrado ou não é um array.");
-                }
-                processes = parsedData.processes;
-            } catch (error) {
-                console.error("Erro ao processar os dados:", error.message);
-                alert("Erro ao carregar os dados de processo.");
-                return;
-            }
+       let dataParam = urlParams.get("data");
 
-            processes_opt = JSON.parse(JSON.stringify(processes));
-            renderProcessTable();
-            runSimulation();
+    if (!dataParam) {
+        console.error("Error: No data received!");
+        alert("Error: No data received!");
+        return;
+    }
+
+    try {
+        console.log("Raw Data:", dataParam);
+        let decodedData = decodeURIComponent(dataParam);
+        console.log("Decoded Data:", decodedData);
+        let parsedData = JSON.parse(decodedData);
+        
+        if (!parsedData.processes || !Array.isArray(parsedData.processes)) {
+            throw new Error("Invalid structure: 'processes' not found or not an array.");
         }
+
+        processes = parsedData.processes;
+        console.log("Processes successfully loaded:", processes);
+
+    } catch (error) {
+        console.error("Error processing data:", error.message);
+        alert("Error loading process data. Check if the URL is correct.");
+        return;
+    }
+
+    processes_opt = JSON.parse(JSON.stringify(processes));
+    renderProcessTable();
+    runSimulation();
+}
 
         function renderProcessTable() {
             const tableBody = document.getElementById("processTableBody");
