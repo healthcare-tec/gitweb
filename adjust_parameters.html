@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajuste dos Parâmetros da Simulação</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script scr="http://cdnjs.cloudfare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <script src="http://cdnjs.cloudfare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         canvas { width: 80%; max-width: 800px; margin-top: 20px; }
@@ -102,7 +102,7 @@
 
         function identifyCriticalPath() {  
             return processes.map(proc => proc.id); // Placeholder: All processes considered critical  
-            console.log("Caminho crítico: ", processes.map )  
+            console.log("Caminho crítico: ", processes.map(proc => proc.id));  
         }
      
   
@@ -116,10 +116,10 @@ function plotResults() {
     let optimizedLabels = generateBins(optimizedResults, bins);  
   
     // Verifica se gráficos antigos existem e destrói  
-    if (window.myOriginalChart) {  
+    if (window.myOriginalChart instanceof Chart) {  
         window.myOriginalChart.destroy();  
     }  
-    if (window.myOptimizedChart) {  
+    if (window.myOptimizedChart instanceof Chart) {  
         window.myOptimizedChart.destroy();  
       }  
   
@@ -186,7 +186,7 @@ function plotResults() {
     plugins: {  
         title: {  
             display: true,  
-            text: "Distribuição de Tempo Original"  
+            text: "Distribuição de Tempo Otimizada"  
         }  
     },  
     scales: {  
@@ -219,6 +219,7 @@ function plotResults() {
     function generateBins(data, numBins) {  
         const min = Math.min(...data);  
         const max = Math.max(...data);  
+        if (min == max) return new Array(numBins).fill(min);   
         const binWidth = (max - min) / numBins;  
         const bins = [];  
         for (let i = 0; i <= numBins; i++) {  
