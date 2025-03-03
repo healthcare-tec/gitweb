@@ -255,14 +255,18 @@ function plotResults() {
     }  
 
         function runMonteCarlo(simulations, processList) {
-            let results = [];
-            for (let i = 0; i < simulations; i++) {
-                let totalTime = processList.reduce((sum, proc) => sum + proc.avg / proc.parallel, 0);
-                results.push(totalTime);
-            }
-            return results;
-        }
-
+    let results = [];
+    for (let i = 0; i < simulations; i++) {
+        let totalTime = 0;
+        processList.forEach(proc => {
+            let sigma = Math.max((proc.avg - proc.min) / 5, 0.01); // Prevent zero sigma
+            let time = Math.max(normalDistribution(proc.avg, sigma), proc.min); // Prevent negative values
+            totalTime += time / proc.parallel;
+        });
+        results.push(totalTime);
+    }
+    return results;
+}
         window.onload = function() {
             loadUserData();
         };
