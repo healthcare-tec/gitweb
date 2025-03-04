@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajuste dos Parâmetros da Simulação</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="http://cdnjs.cloudfare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         canvas { width: 80%; max-width: 800px; margin-top: 20px; }
@@ -51,6 +51,10 @@
         let processes_opt = [];
         let originalResults = [];
         let optimizedResults = [];
+
+window.onload = function() {
+    loadUserData();
+};
 
         function loadUserData() {
             const urlParams = new URLSearchParams(window.location.search);
