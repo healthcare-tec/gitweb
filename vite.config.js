@@ -8,9 +8,7 @@ export default defineConfig({
   base: '/gitweb/', // Base URL for GitHub Pages deployment
   resolve: {
     alias: {
-      '@/lib': path.resolve(__dirname, './lib'), // Alias para o diretório lib na raiz
-      '@': path.resolve(__dirname, './src'), // Alias para o diretório src
+      '@': path.resolve(__dirname, './src'),
     },
   },
 })
-
