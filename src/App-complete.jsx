@@ -80,7 +80,7 @@ function App() {
           <p className="text-lg text-gray-600 mb-12">Materiais práticos para gestores hospitalares</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {leadMagnets.map((material, index) => (
-              <Card key={index} className="p-6 text-left flex flex-col justify-between h-full">
+              <Card key={index} className="p-6 text-left flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
                     {material.icon}
@@ -155,14 +155,14 @@ function App() {
               <div className="flex items-center space-x-2">
                 <Checkbox id="nda" required />
                 <Label htmlFor="nda" className="text-sm text-muted-foreground">
-                  Autorizo a tratar meus dados conforme a LGPD.
+                  Autorizo a tratar meus dados conforme LGPD .
                 </Label>
               </div>
               <Button type="submit" className="w-full" size="lg">Enviar Solicitação</Button>
             </form>
             <div className="mt-8 text-center text-gray-600">
               <p>Ou entre em contato diretamente:</p>
-              <p className="mt-2 flex items-center justify-center"><Mail className="w-5 h-5 mr-2" /> <a href="mailto:cadastro@healthcare.tec" className="text-primary hover:underline">cadastro@healthcare.tec</a></p>
+              <p className="mt-2 flex items-center justify-center"><Mail className="w-5 h-5 mr-2" /> <a href="mailto:cadastro@outlook.com" className="text-primary hover:underline">cadastro@outlook.com</a></p>
               <p className="mt-2 flex items-center justify-center"><Phone className="w-5 h-5 mr-2" /> WhatsApp: Contato Rápido</p>
             </div>
           </div>
