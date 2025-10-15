@@ -4,9 +4,6 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    outDir: 'docs'
-  },
   plugins: [react()],
   base: '/gitweb/', // Base URL for GitHub Pages deployment
   resolve: {
