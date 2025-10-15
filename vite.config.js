@@ -5,6 +5,7 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/gitweb/', // Base URL for GitHub Pages deployment
   resolve: {
     alias: {
       '@/lib': path.resolve(__dirname, './lib'), // Alias para o diretório lib na raiz
