@@ -7,6 +7,7 @@ import Services from './components/Services';
 import Differentials from './components/Differentials';
 import About from './components/About';
 import ContactCTA from './components/ContactCTA';
+import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
 // import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 // import { Button } from './components/ui/button';
@@ -54,6 +55,7 @@ function App() {
       <Services />
       <Differentials />
       <About />
+      <ContactForm />
       <ContactCTA />
       <Footer />
 
