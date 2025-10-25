@@ -4,6 +4,7 @@ import './index.css';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
+import PainPoints from './components/PainPoints';
 import Differentials from './components/Differentials';
 import About from './components/About';
 import ContactCTA from './components/ContactCTA';
@@ -52,6 +53,7 @@ function App() {
     <div className="min-h-screen bg-background">
       <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       <Hero />
+      <PainPoints />
       <Services />
       <Differentials />
       <About />
