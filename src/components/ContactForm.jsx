@@ -31,7 +31,7 @@ const ContactForm = () => {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          access_key: 'YOUR_WEB3FORMS_ACCESS_KEY', // Você precisa criar uma conta gratuita em https://web3forms.com
+          access_key: "f1821e05-9c1c-4737-ae59-6bf1e8802946", // Você precisa criar uma conta gratuita em https://web3forms.com
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
