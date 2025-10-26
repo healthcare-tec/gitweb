@@ -26,8 +26,8 @@ const Differentials = () => {
               icon: <CheckCircle2 className="w-8 h-8 text-primary" />
             },
             {
-              title: "Time Multidisciplinar",
-              description: "Especialistas em engenharia, gestão, acreditação e finanças, prontos para os desafios mais complexos.",
+              title: "Rede de Especialistas",
+              description: "Uma rede colaborativa de parceiros especializados em engenharia, gestão, acreditação e finanças para resolver problemas complexos.",
               icon: <CheckCircle2 className="w-8 h-8 text-primary" />
             },
             {

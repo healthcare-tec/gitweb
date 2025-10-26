@@ -3,7 +3,6 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Mail, Phone, MessageCircle } from 'lucide-react';
 
 const ContactForm = () => {
@@ -15,11 +14,58 @@ const ContactForm = () => {
     service: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    alert('Formulário enviado com sucesso! Entraremos em contato em breve.');
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      // Usando Web3Forms - serviço gratuito e open source
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: 'YOUR_WEB3FORMS_ACCESS_KEY', // Você precisa criar uma conta gratuita em https://web3forms.com
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          hospital: formData.hospital,
+          service: formData.service,
+          message: formData.message,
+          subject: 'Novo contato do site Healthcare.tec'
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          hospital: '',
+          service: '',
+          message: ''
+        });
+        alert('Formulário enviado com sucesso! Entraremos em contato em breve.');
+      } else {
+        setSubmitStatus('error');
+        alert('Erro ao enviar formulário. Por favor, tente novamente ou entre em contato diretamente.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      setSubmitStatus('error');
+      alert('Erro ao enviar formulário. Por favor, tente novamente ou entre em contato diretamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -103,18 +149,20 @@ const ContactForm = () => {
 
             <div>
               <Label htmlFor="service">Serviço de Interesse</Label>
-              <Select name="service" value={formData.service} onValueChange={(value) => setFormData({...formData, service: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um serviço" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gestao-projetos">Gestão de Projetos Hospitalares</SelectItem>
-                  <SelectItem value="redesenho-processos">Redesenho de Processos e Fluxos</SelectItem>
-                  <SelectItem value="acreditacao">Preparação para Acreditação</SelectItem>
-                  <SelectItem value="planejamento-financeiro">Planejamento Financeiro e de Risco</SelectItem>
-                  <SelectItem value="outro">Outro</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                id="service"
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Selecione um serviço</option>
+                <option value="gestao-projetos">Gestão de Projetos Hospitalares</option>
+                <option value="redesenho-processos">Redesenho de Processos e Fluxos</option>
+                <option value="acreditacao">Preparação para Acreditação</option>
+                <option value="planejamento-financeiro">Planejamento Financeiro e de Risco</option>
+                <option value="outro">Outro</option>
+              </select>
             </div>
 
             <div>
@@ -129,8 +177,8 @@ const ContactForm = () => {
               />
             </div>
 
-            <Button type="submit" size="lg" className="w-full">
-              Enviar Mensagem
+            <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
             </Button>
           </form>
 
