@@ -18,7 +18,7 @@ const Header = ({ mobileMenuOpen, setMobileMenuOpen }) => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-              <img src="/gitweb/logo-icon.png" alt="Healthcare.tec" className="w-8 h-8" />
+              <img src="/logo-icon.png" alt="Healthcare.tec" className="w-8 h-8" />
             </div>
             <h1 className="text-2xl font-bold text-primary">
               Healthcare.tec
