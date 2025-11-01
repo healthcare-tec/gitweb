@@ -185,9 +185,9 @@ const ContactForm = () => {
           <div className="mt-8 pt-8 border-t border-border text-center">
             <p className="text-muted-foreground mb-4">Ou entre em contato diretamente:</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="mailto:cadastro@outlook.com" className="flex items-center gap-2 text-primary hover:underline">
+              <a href="mailto:contato@healthcare.tec.br" className="flex items-center gap-2 text-primary hover:underline">
                 <Mail className="w-5 h-5" />
-                <span>cadastro@outlook.com</span>
+                <span>contato@healthcare.tec.br</span>
               </a>
               <button 
                 onClick={handleWhatsAppClick}

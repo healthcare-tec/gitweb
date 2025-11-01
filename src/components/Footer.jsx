@@ -31,7 +31,7 @@ const Footer = () => {
         </div>
         <div>
           <h3 className="text-xl font-bold mb-4">Contato</h3>
-          <p className="text-gray-400 flex items-center"><Mail className="w-5 h-5 mr-2" /> <a href="mailto:cadastro@outlook.com" className="text-gray-400 hover:text-white">cadastro@outlook.com</a></p>
+          <p className="text-gray-400 flex items-center"><Mail className="w-5 h-5 mr-2" /> <a href="mailto:contato@healthcare.tec.br" className="text-gray-400 hover:text-white">contato@healthcare.tec.br</a></p>
           <p className="text-gray-400 flex items-center mt-2"><Phone className="w-5 h-5 mr-2" /> WhatsApp: Contato Rápido</p>
         </div>
       </div>
