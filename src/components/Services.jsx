@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardDescription, CardTitle } from './ui/card';
 import { ClipboardCheck, TrendingUp, Award, BarChart3 } from 'lucide-react';
+import images from '../lib/utils/images';
 
 const Services = () => {
   const services = [
@@ -9,7 +10,7 @@ const Services = () => {
       icon: <ClipboardCheck className="w-8 h-8" />,
       title: "Gestão de Projetos Hospitalares",
       description: "Do estudo de viabilidade ao comissionamento e entrega final, garantindo projetos no prazo e orçamento.",
-      image: "/gitweb/images/project-management.jpg",
+      image: images.projectManagement,
       details: {
         scope: "Planejamento, coordenação, gestão de fornecedores, riscos e cronograma completo.",
         deliverables: ["Project Charter e EAP (WBS)", "Matriz de riscos e logs de decisão", "Relatórios executivos semanais", "Checklist de prontidão para start-up clínico"],
@@ -21,7 +22,7 @@ const Services = () => {
       icon: <TrendingUp className="w-8 h-8" />,
       title: "Redesenho de Processos e Fluxos",
       description: "Mapeamento de fluxos (CME, CC, UTI, Diagnóstico), análise de gargalos e otimização operacional.",
-      image: "/gitweb/images/modern-tech.jpg",
+      image: images.teamCollaboration,
       details: {
         scope: "Análise de gargalos, revisão de layout, padronização operacional e aumento de produtividade.",
         deliverables: ["Modelo de capacidade Antes/Depois", "Painel de tempo de ciclo e produtividade", "Plano de estabilização 30-60-90 dias", "Kit de procedimentos operacionais padrão (SOP)"],
@@ -33,7 +34,7 @@ const Services = () => {
       icon: <Award className="w-8 h-8" />,
       title: "Preparação para Acreditação",
       description: "Diagnóstico completo de conformidade, planos de ação e suporte durante o ciclo de acreditação (ONA, QMentum, JCI).",
-      image: "/gitweb/images/accreditation-meeting.jpg",
+      image: images.accreditation,
       details: {
         scope: "Diagnóstico de gaps, preparação para auditorias simuladas e suporte durante todo o ciclo de acreditação.",
         deliverables: ["Mapa de gaps (RAG Map)", "Matriz de evidências", "Relatório de auditoria simulada", "Painel War Room para acompanhamento"],
@@ -45,7 +46,7 @@ const Services = () => {
       icon: <BarChart3 className="w-8 h-8" />,
       title: "Planejamento Financeiro e de Risco",
       description: "Modelagem de cenários CAPEX/OPEX, análise de ciclo de vida de equipamentos e playbooks de compras.",
-      image: "/gitweb/images/financial-data.jpg",
+      image: images.modernTech,
       details: {
         scope: "Modelagem de investimentos, análise de ciclo de vida e elaboração de playbooks de compras e substituição tecnológica.",
         deliverables: ["Modelo CAPEX/OPEX", "Mapa de risco (GUT)", "Scorecards de fornecedores", "Planilhas de TCO e payback"],
@@ -61,12 +62,25 @@ const Services = () => {
         <p className="text-lg text-gray-600 mb-12">Soluções especializadas para cada desafio hospitalar</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
-            <Card key={service.id} className="p-6 text-left">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600 mb-4">
-                {service.icon}
+            <Card key={service.id} className="p-0 text-left overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              {/* Imagem do serviço */}
+              <div className="relative h-48 overflow-hidden">
+                <img 
+                  src={service.image} 
+                  alt={service.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-4 left-4 flex items-center justify-center w-12 h-12 rounded-full bg-white/90 text-primary">
+                  {service.icon}
+                </div>
               </div>
-              <CardTitle className="text-xl font-semibold mb-2">{service.title}</CardTitle>
-              <CardDescription>{service.description}</CardDescription>
+              
+              {/* Conteúdo do card */}
+              <div className="p-6">
+                <CardTitle className="text-xl font-semibold mb-2">{service.title}</CardTitle>
+                <CardDescription>{service.description}</CardDescription>
+              </div>
             </Card>
           ))}
         </div>
