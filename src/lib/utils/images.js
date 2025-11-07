@@ -1,3 +1,5 @@
+// Usar caminhos públicos relativos à pasta public do Vite
+// No Vite, arquivos em /public são servidos na raiz
 const accreditationMeeting = "/images/accreditation-meeting.jpg";
 const accreditation = "/images/accreditation.jpg";
 const financialData = "/images/financial-data.jpg";
@@ -15,3 +17,4 @@ export default {
   projectManagement,
   teamCollaboration,
 };
+
