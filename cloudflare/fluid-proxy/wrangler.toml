@@ -1,0 +1,17 @@
+name = "healthcare-fluid-proxy"
+main = "src/index.js"
+compatibility_date = "2026-08-21"
+
+routes = [
+  { pattern = "healthcare.tec.br/api/fluid/*", zone_name = "healthcare.tec.br" }
+]
+
+[vars]
+FLUID_UPSTREAM_URL = "https://fluid-api.healthcare.tec.br"
+
+[secrets]
+required = [
+  "FLUID_API_TOKEN",
+  "CF_ACCESS_CLIENT_ID",
+  "CF_ACCESS_CLIENT_SECRET"
+]
