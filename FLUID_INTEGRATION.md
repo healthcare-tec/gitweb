@@ -9,8 +9,7 @@ da API.
 - um ponto de entrada de frontend em `src/lib/fluidApi.js`;
 - chamadas futuras usando o caminho relativo `/api/fluid`;
 - Worker em `cloudflare/fluid-proxy/`;
-- configuração do Wrangler com secrets obrigatórios;
-- workflow manual de deploy em
+- configuração do Wrangler e workflow manual de deploy em
   `.github/workflows/deploy-fluid-proxy.yml`;
 - nenhum token ou segredo no código do site.
 
@@ -43,6 +42,13 @@ Cloudflare. A API direta deve permanecer atrás do Access.
 4. Criar o Service Token e guardar o Client ID e Client Secret.
 5. Garantir que o DNS de `healthcare.tec.br` esteja proxied pelo Cloudflare,
    para que a rota do Worker seja aplicada.
+6. Após o primeiro deploy, adicionar no Worker os secrets
+   `FLUID_API_TOKEN`, `CF_ACCESS_CLIENT_ID` e
+   `CF_ACCESS_CLIENT_SECRET`.
+7. Executar o deploy novamente e testar as rotas.
+
+A primeira publicação pode responder 503 enquanto os secrets não estiverem
+configurados; isso é esperado.
 
 ### No GitHub
 
@@ -52,18 +58,16 @@ Em **Settings > Secrets and variables > Actions**, cadastrar:
 - `CLOUDFLARE_ACCOUNT_ID`.
 
 Depois, em **Actions > Deploy Fluid proxy > Run workflow**, executar o deploy
-manualmente.
+duas vezes: uma para criar o Worker e outra após adicionar os secrets no
+Worker.
 
-### No Worker após o primeiro deploy
+### Testes complementares
 
-Configurar no Worker os secrets:
-
-- `FLUID_API_TOKEN`;
-- `CF_ACCESS_CLIENT_ID`;
-- `CF_ACCESS_CLIENT_SECRET`.
-
-O arquivo `cloudflare/fluid-proxy/wrangler.toml` declara esses nomes como
-obrigatórios, mas não contém seus valores.
+- sem credenciais no hostname direto da API: deve ser bloqueado pelo Access;
+- no Worker sem secrets: deve responder 503;
+- no Worker com secrets e Access configurado: deve retornar a API;
+- com origem diferente de `https://healthcare.tec.br`: deve ser bloqueado;
+- sem autorização de usuário na área Fluid: deve ser bloqueado antes da API.
 
 ## Ainda pendente
 
