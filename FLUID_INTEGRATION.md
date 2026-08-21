@@ -8,6 +8,10 @@ da API.
 - uma seção pública de apresentação em `src/components/FluidCTA.jsx`;
 - um ponto de entrada de frontend em `src/lib/fluidApi.js`;
 - chamadas futuras usando o caminho relativo `/api/fluid`;
+- Worker em `cloudflare/fluid-proxy/`;
+- configuração do Wrangler com secrets obrigatórios;
+- workflow manual de deploy em
+  `.github/workflows/deploy-fluid-proxy.yml`;
 - nenhum token ou segredo no código do site.
 
 A seção pública apresenta o serviço e direciona o visitante para solicitar
@@ -25,13 +29,47 @@ site público
   -> API Fluid /api/v1/*
 ```
 
-O Worker deve substituir as credenciais do navegador por secrets configurados
-no Cloudflare. A API direta deve permanecer atrás do Access.
+O Worker substitui as credenciais do navegador por secrets configurados no
+Cloudflare. A API direta deve permanecer atrás do Access.
+
+## Ações complementares necessárias
+
+### No Cloudflare
+
+1. Criar o hostname `fluid-api.healthcare.tec.br` no Tunnel, apontando para
+   `http://127.0.0.1:3039`.
+2. Criar uma aplicação Access para esse hostname.
+3. Adicionar uma política `Service Auth -> Service Token`.
+4. Criar o Service Token e guardar o Client ID e Client Secret.
+5. Garantir que o DNS de `healthcare.tec.br` esteja proxied pelo Cloudflare,
+   para que a rota do Worker seja aplicada.
+
+### No GitHub
+
+Em **Settings > Secrets and variables > Actions**, cadastrar:
+
+- `CLOUDFLARE_API_TOKEN`;
+- `CLOUDFLARE_ACCOUNT_ID`.
+
+Depois, em **Actions > Deploy Fluid proxy > Run workflow**, executar o deploy
+manualmente.
+
+### No Worker após o primeiro deploy
+
+Configurar no Worker os secrets:
+
+- `FLUID_API_TOKEN`;
+- `CF_ACCESS_CLIENT_ID`;
+- `CF_ACCESS_CLIENT_SECRET`.
+
+O arquivo `cloudflare/fluid-proxy/wrangler.toml` declara esses nomes como
+obrigatórios, mas não contém seus valores.
 
 ## Ainda pendente
 
-- configurar a rota real do Worker no Cloudflare;
-- decidir entre `app.healthcare.tec.br` e uma rota privada no domínio atual;
+- definir se a área de usuário será `app.healthcare.tec.br` ou uma rota
+  privada no domínio atual;
 - configurar autenticação e autorização por organização/projeto;
 - criar a tela autenticada de projeto, modelo, avaliação e resultado;
-- testar o build e a navegação no domínio publicado.
+- testar o build, o Access, o Worker e a API em sequência;
+- só então publicar/mesclar a PR.
