@@ -36,8 +36,9 @@ use `wrangler secret put` localmente. Os valores não ficam no frontend nem em
 
 No GitHub, em Settings > Secrets and variables > Actions, cadastrar:
 
-- `CLOUDFLARE_API_TOKEN`: token de API do Cloudflare com permissão mínima
-  para publicar o Worker;
+- `CLOUDFLARE_API_TOKEN`: token de usuário do Cloudflare com escopo mínimo
+  para **Workers Scripts: Write** e **Workers Routes: Write** na conta/zona
+  deste projeto;
 - `CLOUDFLARE_ACCOUNT_ID`: ID da conta Cloudflare.
 
 A ação está configurada como manual (`workflow_dispatch`) para impedir um
