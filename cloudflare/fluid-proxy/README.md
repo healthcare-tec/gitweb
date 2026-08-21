@@ -11,8 +11,13 @@ navegador.
 3. Criar uma política `Service Auth -> Service Token` para o Worker.
 4. Criar o Service Token e guardar o Client ID e Client Secret.
 5. No repositório GitHub, cadastrar os secrets da lista abaixo.
-6. Executar manualmente a ação `Deploy Fluid proxy`.
-7. Testar o hostname direto e a rota `/api/fluid/service-types`.
+6. Executar manualmente a ação `Deploy Fluid proxy` uma primeira vez.
+7. Configurar os três secrets do Worker no dashboard Cloudflare.
+8. Executar a ação novamente para publicar o código com os secrets disponíveis.
+9. Testar o hostname direto e a rota `/api/fluid/service-types`.
+
+Durante a primeira publicação, o Worker pode responder 503 até que os secrets
+sejam configurados. Isso é esperado e evita que o proxy opere sem autenticação.
 
 ## Secrets do Worker
 
@@ -22,8 +27,10 @@ Os valores abaixo são secrets do Worker e não devem entrar no Git:
 - `CF_ACCESS_CLIENT_ID`: Client ID do Service Token;
 - `CF_ACCESS_CLIENT_SECRET`: Client Secret do Service Token.
 
-O Wrangler valida que os três estejam configurados antes do deploy. Os secrets
-são armazenados no Cloudflare, não no frontend nem em `wrangler.toml`.
+No dashboard, abra **Workers & Pages > Worker > Settings > Variables and
+Secrets**, adicione os três como tipo **Secret** e publique. Alternativamente,
+use `wrangler secret put` localmente. Os valores não ficam no frontend nem em
+`wrangler.toml`.
 
 ## Secrets do GitHub Actions
 
