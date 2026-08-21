@@ -7,6 +7,7 @@ import Services from './components/Services';
 import PainPoints from './components/PainPoints';
 import Differentials from './components/Differentials';
 import About from './components/About';
+import FluidCTA from './components/FluidCTA';
 import ContactCTA from './components/ContactCTA';
 import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
@@ -57,14 +58,12 @@ function App() {
       <Services />
       <Differentials />
       <About />
+      <FluidCTA />
       <ContactForm />
       <ContactCTA />
       <Footer />
-
-
     </div>
   );
 }
 
 export default App;
-
