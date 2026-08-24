@@ -2,6 +2,15 @@ const FLUID_PROXY_PREFIX = '/api/fluid';
 
 async function parseResponse(response) {
   const contentType = response.headers.get('content-type') || '';
+  const isAccessPage = contentType.includes('text/html')
+    || response.url.includes('/cdn-cgi/access/');
+
+  if (isAccessPage) {
+    const error = new Error('O acesso ao Fluid requer autenticação Cloudflare Access.');
+    error.code = 'ACCESS_REQUIRED';
+    throw error;
+  }
+
   const payload = contentType.includes('application/json')
     ? await response.json()
     : await response.text();
@@ -10,7 +19,11 @@ async function parseResponse(response) {
     const message = typeof payload === 'object' && payload?.detail
       ? payload.detail
       : 'A solicitação ao Fluid não foi concluída.';
-    throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
+    const error = new Error(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    );
+    error.status = response.status;
+    throw error;
   }
 
   return payload;
