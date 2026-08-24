@@ -57,4 +57,21 @@ export const fluidApi = {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(document),
   }),
+  createProject: (project) => fluidRequest('/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(project),
+  }),
+  createEvaluation: (projectId, evaluation, idempotencyKey) => fluidRequest(
+    `/projects/${projectId}/evaluations`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
+      },
+      body: JSON.stringify(evaluation),
+    }
+  ),
+  getEvaluation: (evaluationId) => fluidRequest(`/evaluations/${evaluationId}`),
 };
