@@ -10,11 +10,13 @@ import {
   XCircle,
 } from 'lucide-react';
 import { fluidApi } from '../lib/fluidApi';
+import FluidSimulationPanel from './FluidSimulationPanel';
 import { Button } from './ui/button';
 
 const FluidCTA = () => {
   const [accessState, setAccessState] = useState('idle');
   const [serviceTypes, setServiceTypes] = useState([]);
+  const [simulationOpen, setSimulationOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const scrollToContact = () => {
@@ -32,6 +34,7 @@ const FluidCTA = () => {
       const payload = await fluidApi.listServiceTypes();
       const items = Array.isArray(payload?.items) ? payload.items : [];
       setServiceTypes(items);
+      setSimulationOpen(false);
       setAccessState(items.length ? 'ready' : 'empty');
     } catch (error) {
       if (error?.code === 'ACCESS_REQUIRED') {
@@ -156,6 +159,22 @@ const FluidCTA = () => {
                     </li>
                   ))}
                 </ul>
+                {serviceTypes.some((service) => service.id === 'flow_simulation') && (
+                  <Button
+                    type="button"
+                    size="lg"
+                    onClick={() => setSimulationOpen(true)}
+                    className="w-full bg-cyan-400 text-slate-950 hover:bg-cyan-300"
+                  >
+                    Abrir Flow Simulation
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                )}
+                {simulationOpen && (
+                  <FluidSimulationPanel
+                    onClose={() => setSimulationOpen(false)}
+                  />
+                )}
               </div>
             )}
 
