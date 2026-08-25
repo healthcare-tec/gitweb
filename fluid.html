@@ -63,6 +63,12 @@
         <div id="model-status" class="status" role="status">
           Carregando e validando o modelo padrão...
         </div>
+        <p style="margin-top:12px; color:#94a3b8; font-size:.9rem;">
+          Sessão protegida:
+          <a href="/cdn-cgi/access/login/healthcare.tec.br?redirect_url=%2Ffluid.html">
+            Entrar com Cloudflare Access
+          </a>
+        </p>
 
         <form id="simulation-form" class="hidden">
           <div class="grid" style="margin-top:24px;">
@@ -132,17 +138,25 @@
       function showAccessMessage() {
         modelStatus.className = "status error";
         modelStatus.innerHTML =
-          'Esta área exige autenticação. <a href="/api/fluid/service-types">Entrar com Cloudflare Access</a> e depois retornar para <a href="/fluid.html">fluid.html</a>.';
+          'Esta área exige autenticação. <a href="/cdn-cgi/access/login/healthcare.tec.br?redirect_url=%2Ffluid.html">Entrar com Cloudflare Access</a>. Após o login, você retornará automaticamente para esta página.';
       }
 
       async function request(path, options = {}) {
         const headers = new Headers(options.headers || {});
         headers.set("Accept", "application/json");
-        const response = await fetch(API_PREFIX + path, {
-          ...options,
-          headers,
-          credentials: "include",
-        });
+        let response;
+        try {
+          response = await fetch(API_PREFIX + path, {
+            ...options,
+            headers,
+            credentials: "include",
+          });
+        } catch (error) {
+          const authError = new Error("AUTH_REQUIRED");
+          authError.code = "ACCESS_REQUIRED";
+          authError.cause = error;
+          throw authError;
+        }
         const contentType = response.headers.get("content-type") || "";
 
         if (contentType.includes("text/html") || response.url.includes("/cdn-cgi/access/")) {
