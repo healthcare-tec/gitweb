@@ -22,10 +22,8 @@ function corsHeaders() {
 
 function isAllowedBrowserRequest(request) {
   const origin = request.headers.get("Origin");
-  const fetchSite = request.headers.get("Sec-Fetch-Site");
 
   if (origin && origin !== ALLOWED_ORIGIN) return false;
-  if (fetchSite === "cross-site") return false;
   return true;
 }
 
