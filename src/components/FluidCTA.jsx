@@ -127,7 +127,7 @@ const FluidCTA = () => {
                   size="lg"
                   className="bg-white text-slate-950 hover:bg-slate-200"
                 >
-                  <a href="/api/fluid/service-types">
+                  <a href="/api/fluid/access?return_to=%2F%23fluid">
                     <LogIn className="mr-2 w-5 h-5" />
                     Entrar com Cloudflare Access
                   </a>

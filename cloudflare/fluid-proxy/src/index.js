@@ -29,6 +29,18 @@ function isAllowedBrowserRequest(request) {
   return true;
 }
 
+function accessReturnUrl(request) {
+  const requested = new URL(request.url).searchParams.get("return_to") || "/";
+
+  // Only allow same-origin absolute paths. This endpoint is a login bootstrap
+  // and must not become an open redirect.
+  if (!requested.startsWith("/") || requested.startsWith("//")) {
+    return new URL("/", request.url);
+  }
+
+  return new URL(requested, request.url);
+}
+
 function upstreamUrl(request, env) {
   const publicUrl = new URL(request.url);
   const upstream = new URL(env.FLUID_UPSTREAM_URL);
@@ -65,6 +77,16 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders() });
+    }
+
+    if (url.pathname === `${PUBLIC_PREFIX}/access`) {
+      if (request.method !== "GET") {
+        return json({ error: "Method not allowed" }, 405);
+      }
+
+      // Cloudflare Access challenges this protected path first. Once the user
+      // is authenticated, return them to the page that started the login.
+      return Response.redirect(accessReturnUrl(request), 302);
     }
 
     if (!["GET", "POST"].includes(request.method)) {
