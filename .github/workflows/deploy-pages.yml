@@ -28,6 +28,12 @@ jobs:
       - name: Build site
         run: npm run build
 
+      - name: Publish Fluid pages
+        run: |
+          cp fluid.html dist/fluid.html
+          mkdir -p dist/fluid
+          cp fluid/index.html dist/fluid/index.html
+
       - name: Publish gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
