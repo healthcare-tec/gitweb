@@ -10,13 +10,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { fluidApi } from '../lib/fluidApi';
-import FluidSimulationPanel from './FluidSimulationPanel';
 import { Button } from './ui/button';
 
 const FluidCTA = () => {
   const [accessState, setAccessState] = useState('idle');
   const [serviceTypes, setServiceTypes] = useState([]);
-  const [simulationOpen, setSimulationOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const scrollToContact = () => {
@@ -34,7 +32,6 @@ const FluidCTA = () => {
       const payload = await fluidApi.listServiceTypes();
       const items = Array.isArray(payload?.items) ? payload.items : [];
       setServiceTypes(items);
-      setSimulationOpen(false);
       setAccessState(items.length ? 'ready' : 'empty');
     } catch (error) {
       if (error?.code === 'ACCESS_REQUIRED') {
@@ -63,9 +60,9 @@ const FluidCTA = () => {
               Simule cenários antes de tomar decisões operacionais
             </h2>
             <p className="mt-4 text-lg leading-8 text-slate-300">
-              O Fluid transforma dados de demanda, capacidade e rotas em
-              indicadores de filas, atendimento, throughput e SLA para apoiar
-              decisões mais seguras.
+              Desenhe visualmente as etapas, conecte os caminhos e informe
+              demanda, capacidade e tempos. O Fluid transforma esse mapa em
+              indicadores de filas, atendimento, throughput e SLA.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Button
@@ -127,7 +124,7 @@ const FluidCTA = () => {
                   size="lg"
                   className="bg-white text-slate-950 hover:bg-slate-200"
                 >
-                  <a href="/api/fluid/access?return_to=%2F%23fluid">
+                  <a href="/api/fluid/access?return_to=%2Ffluid%2F">
                     <LogIn className="mr-2 w-5 h-5" />
                     Entrar com Cloudflare Access
                   </a>
@@ -161,19 +158,15 @@ const FluidCTA = () => {
                 </ul>
                 {serviceTypes.some((service) => service.id === 'flow_simulation') && (
                   <Button
-                    type="button"
+                    asChild
                     size="lg"
-                    onClick={() => setSimulationOpen(true)}
                     className="w-full bg-cyan-400 text-slate-950 hover:bg-cyan-300"
                   >
-                    Abrir Flow Simulation
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <a href="/fluid/">
+                      Abrir editor visual
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </a>
                   </Button>
-                )}
-                {simulationOpen && (
-                  <FluidSimulationPanel
-                    onClose={() => setSimulationOpen(false)}
-                  />
                 )}
               </div>
             )}

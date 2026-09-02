@@ -31,8 +31,7 @@ jobs:
       - name: Publish Fluid pages
         run: |
           cp fluid.html dist/fluid.html
-          mkdir -p dist/fluid
-          cp fluid/index.html dist/fluid/index.html
+          cp -R fluid dist/fluid
 
       - name: Publish gh-pages
         env:
