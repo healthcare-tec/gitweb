@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Modele visualmente fluxos assistenciais e simule filas, capacidade e SLA." />
+    <title>Fluid · Mapeamento de processos</title>
+    <link rel="stylesheet" href="/fluid/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="/" aria-label="Healthcare.tec">
+        <span class="brand-mark">H</span><span>Healthcare.tec</span>
+      </a>
+      <div class="header-copy">
+        <span class="eyebrow">Fluid</span>
+        <strong>Mapeamento e simulação de processos</strong>
+      </div>
+      <div class="header-actions">
+        <span id="save-state" class="save-state">Rascunho local</span>
+        <a href="/">Voltar ao site</a>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section id="access-gate" class="access-gate" hidden>
+        <div class="access-icon">↗</div>
+        <div>
+          <p class="eyebrow">Área protegida</p>
+          <h1>Entre para construir seu fluxo</h1>
+          <p>Use uma conta membro da Cloudflare para acessar o editor e a API Fluid.</p>
+        </div>
+        <a class="button primary" href="/api/fluid/access?return_to=%2Ffluid%2F">Entrar com Cloudflare Access</a>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="hero-row">
+          <div>
+            <p class="eyebrow">Jornada de modelagem</p>
+            <h1>Desenhe o processo antes de simular</h1>
+            <p class="hero-description">Crie as etapas, conecte os caminhos e informe capacidade, tempos e demanda. O Fluid transforma o desenho em um modelo executável — sem planilhas.</p>
+          </div>
+          <div class="hero-actions">
+            <button id="new-map" class="button ghost" type="button">Novo mapa</button>
+            <button id="validate-map" class="button secondary" type="button">Validar mapa</button>
+          </div>
+        </div>
+
+        <nav class="journey-tabs" aria-label="Etapas da configuração">
+          <button class="journey-tab active" type="button" data-tab="map"><span>1</span><span><strong>Mapear fluxo</strong><small>Etapas e conexões</small></span></button>
+          <button class="journey-tab" type="button" data-tab="demand"><span>2</span><span><strong>Definir demanda</strong><small>Volume e perfis</small></span></button>
+          <button class="journey-tab" type="button" data-tab="run"><span>3</span><span><strong>Executar</strong><small>Projeto e simulação</small></span></button>
+        </nav>
+
+        <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+
+        <section id="tab-map" class="tab-panel active">
+          <div class="map-toolbar">
+            <div><label for="map-name">Nome do fluxo</label><input id="map-name" maxlength="240" /></div>
+            <div class="toolbar-actions">
+              <button id="add-stage" class="button primary" type="button">+ Adicionar etapa</button>
+              <button id="connect-stages" class="button secondary" type="button">Conectar etapas</button>
+              <button id="auto-layout" class="button ghost" type="button">Organizar</button>
+            </div>
+          </div>
+
+          <div class="editor-grid">
+            <div class="canvas-column">
+              <div id="connection-hint" class="connection-hint" hidden>Selecione a etapa de origem e depois a etapa de destino. <button id="cancel-connect" type="button">Cancelar</button></div>
+              <div id="process-canvas" class="process-canvas" aria-label="Mapa visual do processo">
+                <svg id="edge-layer" class="edge-layer" aria-hidden="true">
+                  <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>
+                  <g id="edge-lines"></g>
+                </svg>
+                <div id="node-layer"></div>
+                <div id="empty-canvas" class="empty-canvas" hidden>Adicione uma etapa para começar a desenhar o processo.</div>
+              </div>
+              <p class="canvas-help">Arraste as etapas para organizar. Para criar um caminho, use “Conectar etapas” e clique em dois blocos.</p>
+            </div>
+
+            <aside id="inspector" class="inspector">
+              <div id="inspector-empty" class="inspector-empty"><span>◎</span><h2>Selecione um elemento</h2><p>Clique em uma etapa ou conexão para editar seus parâmetros.</p></div>
+
+              <form id="node-form" hidden>
+                <div class="inspector-heading"><div><p class="eyebrow">Etapa selecionada</p><h2 id="node-form-title">Configurar etapa</h2></div><button id="delete-node" class="icon-button danger" type="button" title="Excluir etapa">×</button></div>
+                <div class="form-grid"><label>ID técnico<input id="node-id" maxlength="64" /></label><label>Nome<input id="node-name" maxlength="160" /></label><label class="full">Descrição<textarea id="node-description" rows="2"></textarea></label></div>
+                <div id="process-fields">
+                  <h3>Operação</h3>
+                  <div class="form-grid two">
+                    <label>Capacidade<input id="node-capacity" type="number" min="1" max="10000" /></label>
+                    <label>Política da fila<select id="node-queue-policy"><option value="NORMAL">Ordem de chegada</option><option value="PRIORITY">Prioridade por triagem</option></select></label>
+                    <label>Ação quando fechado<select id="node-closed-action"><option value="WAIT">Aguardar abertura</option><option value="SKIP">Pular etapa</option></select></label>
+                    <label>Distribuição do tempo<select id="node-distribution"><option value="constant">Fixo</option><option value="normal">Normal</option><option value="triangular">Triangular</option><option value="exponential">Exponencial</option></select></label>
+                  </div>
+                  <h3>Tempo de atendimento (minutos)</h3>
+                  <div class="form-grid four"><label>Médio<input id="node-time-mean" type="number" min="0.01" step="0.1" /></label><label>Mínimo<input id="node-time-min" type="number" min="0" step="0.1" /></label><label>Mais provável<input id="node-time-mode" type="number" min="0" step="0.1" /></label><label>Máximo<input id="node-time-max" type="number" min="0" step="0.1" /></label></div>
+                  <h3>Fila e SLA</h3>
+                  <div class="form-grid two"><label>SLA da fila (min)<input id="node-queue-sla" type="number" min="0" /></label><label>Meta da fila (%)<input id="node-queue-sla-pct" type="number" min="0" max="100" /></label><label>Abandono após SLA (%)<input id="node-abandon-pct" type="number" min="0" max="100" step="0.1" /></label><label>SLA do atendimento (min)<input id="node-service-sla" type="number" min="0" /></label><label>Meta do atendimento (%)<input id="node-service-sla-pct" type="number" min="0" max="100" /></label></div>
+                </div>
+              </form>
+
+              <form id="edge-form" hidden>
+                <div class="inspector-heading"><div><p class="eyebrow">Conexão selecionada</p><h2>Configurar caminho</h2></div><button id="delete-edge" class="icon-button danger" type="button" title="Excluir conexão">×</button></div>
+                <p id="edge-route" class="edge-route"></p>
+                <label>Probabilidade para todas as triagens (%)<input id="edge-probability" type="number" min="0" max="100" step="0.1" /></label>
+                <details><summary>Probabilidade por classe de triagem</summary><p class="field-help">Deixe vazio para usar a probabilidade geral.</p><div id="edge-triage-fields" class="form-grid five"></div></details>
+              </form>
+            </aside>
+          </div>
+
+          <div class="connections-card"><div><p class="eyebrow">Caminhos configurados</p><h2>Conexões e probabilidades</h2></div><div id="edge-list" class="edge-list"></div></div>
+        </section>
+
+        <section id="tab-demand" class="tab-panel">
+          <div class="section-heading"><div><p class="eyebrow">Entrada do sistema</p><h2>Demanda por hora</h2><p>Informe quantas pessoas chegam em cada faixa horária e como se distribuem nas classes de triagem.</p></div><button id="fill-demand" class="button ghost" type="button">Repetir primeiro valor em 24h</button></div>
+          <div class="demand-layout">
+            <div class="demand-card"><div class="demand-summary"><span>Total diário estimado</span><strong id="daily-demand">0</strong></div><div id="demand-grid" class="demand-grid"></div></div>
+            <aside class="triage-card"><p class="eyebrow">Perfil de entrada</p><h2>Distribuição por triagem</h2><p class="field-help">A composição abaixo será aplicada a todas as horas.</p><div id="triage-mix" class="triage-mix"></div><div class="mix-total"><span>Total</span><strong id="triage-total">100%</strong></div></aside>
+          </div>
+        </section>
+
+        <section id="tab-run" class="tab-panel">
+          <div class="run-layout">
+            <form id="project-form" class="form-card">
+              <p class="eyebrow">Identificação</p><h2>Dados do projeto</h2>
+              <div class="form-grid two"><label>Referência *<input name="reference" required maxlength="120" value="HC-FLOW-2026" /></label><label>Organização<input name="organization" maxlength="200" /></label><label class="full">Título<input name="title" maxlength="240" value="Simulação de fluxo assistencial" /></label><label class="full">Objetivo da análise *<textarea name="scope" required rows="3">Avaliar filas, capacidade e desempenho do processo.</textarea></label><label>Responsável *<input name="responsibleName" required maxlength="200" /></label><label>E-mail<input name="responsibleEmail" type="email" /></label></div>
+            </form>
+            <div class="form-card">
+              <p class="eyebrow">Execução</p><h2>Configurações da simulação</h2>
+              <div class="form-grid two"><label>Duração (minutos)<input id="setting-duration" type="number" min="1" max="10080" /></label><label>Tempo extra (minutos)<input id="setting-extra-time" type="number" min="0" max="10080" /></label><label>Repetições<input id="setting-replications" type="number" min="1" max="100" /></label><label>Semente aleatória<input id="setting-seed" type="number" /></label></div>
+              <div class="run-checklist"><div><span id="check-map">○</span> Mapa conectado e válido</div><div><span id="check-demand">○</span> Demanda configurada</div><div><span id="check-project">○</span> Projeto identificado</div></div>
+              <button id="run-simulation" class="button primary wide" type="button">Validar e executar simulação</button>
+            </div>
+          </div>
+          <section id="result-panel" class="result-panel" hidden><div class="result-heading"><div><p class="eyebrow">Resultado</p><h2 id="result-title">Simulação concluída</h2></div><span id="result-badge" class="result-badge">Concluída</span></div><div id="result-summary" class="result-summary"></div><details><summary>Ver resultado técnico completo</summary><pre id="result-json"></pre></details></section>
+        </section>
+      </section>
+    </main>
+    <script src="/fluid/app.js" defer></script>
+  </body>
+</html>
