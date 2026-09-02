@@ -12,10 +12,12 @@ da API.
 - configuração do Wrangler e workflow manual de deploy em
   `.github/workflows/deploy-fluid-proxy.yml`;
 - nenhum token ou segredo no código do site.
+- editor visual independente em `/fluid/`, com etapas arrastáveis, conexões,
+  probabilidades, parâmetros, demanda e execução sem Excel;
+- rascunho salvo no navegador e envio do contrato `process_map` para a API.
 
-A seção pública apresenta o serviço e direciona o visitante para solicitar
-acesso. A aplicação de simulação deverá ficar em uma área protegida, não na
-landing page pública.
+A seção pública apresenta o serviço e leva o usuário autenticado ao editor
+visual protegido. A aplicação de simulação permanece separada da landing page.
 
 ## Fluxo esperado
 
