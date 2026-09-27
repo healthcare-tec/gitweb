@@ -15,8 +15,10 @@ const contact = 'mailto:contato@healthcare.tec.br';
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const consultancyPage = path === '/consultoria';
+  const consultancyPage = path === '/consultoria';
   return <header className="site-header"><div className="site-wrap header-inner">
-    <a className="brand" href="/" aria-label="PubBid — início"><span className="brand-symbol"><Layers size={22} /></span><span>Pub<span className="brand-light">Bid</span><small>por Healthcare.tec</small></span></a>
+    <a className={consultancyPage ? 'brand healthcare-brand' : 'brand'} href="/" aria-label={consultancyPage ? 'Healthcare.tec — início' : 'PubBid — início'}>{consultancyPage ? <><img src="/logo-icon.png" alt="" /><span>Healthcare.tec<small>Engineering Health</small></span></> : <><span className="brand-symbol"><Layers size={22} /></span><span>Pub<span className="brand-light">Bid</span><small>por Healthcare.tec</small></span></>}</a>
     <button className="menu-toggle" aria-expanded={open} aria-controls="site-nav" aria-label={open ? 'Fechar menu' : 'Abrir menu'} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
     <nav id="site-nav" className={open ? 'site-nav is-open' : 'site-nav'} aria-label="Navegação principal" onClick={() => setOpen(false)} onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); document.querySelector('.menu-toggle').focus(); } }}>
       <a href="/#como-funciona">Como funciona</a><a href="/#fontes">Fontes e limites</a><a href="/consultoria/" aria-current={path === '/consultoria' ? 'page' : undefined}>Consultoria</a><a className="button button-small" href="/acesso/" aria-current={path === '/acesso' ? 'page' : undefined}>Acessar o sistema <ArrowUpRight size={16} /></a>
@@ -72,7 +74,8 @@ function Access() {
 }
 
 function Footer() {
-  return <footer className="site-footer"><div className="site-wrap"><div className="footer-grid"><div><a className="brand" href="/">PubBid</a><p>Inteligência para compras públicas em saúde.<br />Uma iniciativa Healthcare.tec.</p></div><nav aria-label="Rodapé"><a href="/#como-funciona">Como funciona</a><a href="/#fontes">Fontes e limites</a><a href="/consultoria/">Consultoria</a><a href="/acesso/">Acessar o sistema</a></nav><div><span className="footer-label">VAMOS CONVERSAR</span><a href={contact}>contato@healthcare.tec.br <ArrowUpRight size={14} /></a></div></div><div className="footer-bottom"><p>A ferramenta apoia pesquisa; não substitui o edital, a fonte oficial ou a análise técnica, jurídica e comercial.</p><span>© {new Date().getFullYear()} Healthcare.tec</span></div></div></footer>;
+  const consultancyPage = path === '/consultoria';
+  return <footer className="site-footer"><div className="site-wrap"><div className="footer-grid"><div><a className={consultancyPage ? 'brand healthcare-brand footer-healthcare-brand' : 'brand'} href="/">{consultancyPage ? <><img src="/logo-icon.png" alt="" /><span>Healthcare.tec<small>Engineering Health</small></span></> : 'PubBid'}</a><p>{consultancyPage ? 'Engineering Health' : <>Inteligência para compras públicas em saúde.<br />Uma iniciativa Healthcare.tec.</>}</p></div><nav aria-label="Rodapé"><a href="/#como-funciona">Como funciona</a><a href="/#fontes">Fontes e limites</a><a href="/consultoria/">Consultoria</a><a href="/acesso/">Acessar o sistema</a></nav><div><span className="footer-label">VAMOS CONVERSAR</span><a href={contact}>contato@healthcare.tec.br <ArrowUpRight size={14} /></a></div></div><div className="footer-bottom"><p>{consultancyPage ? 'Healthcare.tec — consultoria em gestão de projetos, processos e operações hospitalares.' : 'A ferramenta apoia pesquisa; não substitui o edital, a fonte oficial ou a análise técnica, jurídica e comercial.'}</p><span>© {new Date().getFullYear()} Healthcare.tec</span></div></div></footer>;
 }
 
 export default function App() {
