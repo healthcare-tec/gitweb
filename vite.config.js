@@ -7,7 +7,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 function staticPages() {
   return {
     name: 'static-pages',
-    closeBundle() {
+    writeBundle() {
       const html = readFileSync('dist/index.html', 'utf8')
       for (const [route, title, description] of [
         ['acesso', 'Acesse o PubBid | Healthcare.tec', 'Consulte a disponibilidade do ambiente de pesquisa e da API PubBid.'],
@@ -37,3 +37,4 @@ export default defineConfig({
     },
   },
 })
+
