@@ -10,7 +10,7 @@ function staticPages() {
     writeBundle() {
       const html = readFileSync('dist/index.html', 'utf8')
       for (const [route, title, description] of [
-        ['acesso', 'Acesso ao Planejamento de Incorporação Tecnológica | PubBid', 'Entre no PubBid para pesquisar equipamentos e reunir referências de compras públicas que apoiem seu planejamento.'],
+        ['acesso', 'Acessar o PubBid e o EqptEC | Healthcare.tec', 'Entre no PubBid para pesquisar equipamentos e reunir referências de compras públicas que apoiem seu planejamento.'],
         ['consultoria', 'Consultoria em gestão e operações de saúde | Healthcare.tec', 'Conheça os serviços profissionais de gestão de projetos, processos e operações hospitalares da Healthcare.tec.'],
       ]) {
         const page = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
