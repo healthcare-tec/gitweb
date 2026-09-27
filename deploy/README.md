@@ -7,17 +7,17 @@ O build mantém o arquivo `CNAME` de `public/` e emite `/acesso/index.html`, `/c
 
 ## Aplicações e túnel
 
-O túnel compartilhado Fluid utiliza a rede do host. A entrada pública única é `https://fluid-api.healthcare.tec.br/`, encaminhada para `http://localhost:3039` (PubBid). Interface identificada e HTTP 200 verificados após simplificar as rotas.
+O túnel compartilhado Fluid utiliza a rede do host. A entrada pública única é `https://fluid-api.healthcare.tec.br/`, encaminhada para `http://localhost:3039` (gateway PubBid). A raiz redireciona ao planejamento EqptEC em `/eqptec/`; a pesquisa PubBid atende `/pubbid/`.
 
-Os ingress provisórios `pubbid.healthcare.tec.br` e `eqptec.healthcare.tec.br` foram removidos por decisão do proprietário. Nenhum registro DNS novo é necessário. O EqptEC continua internamente em 8501; o proprietário implementará a ponte entre os serviços. Não anunciar o acesso integrado como disponível antes de validar a rota e a sessão WebSocket correspondente.
+Os ingress provisórios `pubbid.healthcare.tec.br` e `eqptec.healthcare.tec.br` foram removidos por decisão do proprietário. Nenhum registro DNS novo é necessário. O EqptEC continua internamente em 8501; a ponte `/eqptec/` já está ativa e foi validada com WebSocket.
 
-`VITE_PUBBID_URL` usa `https://fluid-api.healthcare.tec.br/` como padrão. O site apresenta um único botão de acesso e informa que a integração EqptEC está em preparação.
+`VITE_PUBBID_URL` usa `https://fluid-api.healthcare.tec.br/pubbid/` como padrão. A página de acesso apresenta o planejamento EqptEC como entrada principal e o PubBid como pesquisa complementar. Ambas as interfaces usam o único túnel da porta 3039.
 
-Os processos PubBid e EqptEC estão em uma sessão do usuário. O serviço systemd PubBid estava falhando por porta ocupada e foi parado para interromper o loop, preservando o processo ativo. A migração para serviços persistentes ainda precisa ser concluída, sem interromper coletas ou sessões em uso.
+`pubbid.service` e `eqptec.service` são unidades persistentes do usuário `apple`; ambas estavam ativas em 2026-09-27. Corrigir o site estático não exige reiniciar essas unidades nem alterar o túnel.
 
 A API é anunciada mediante assinatura. A implementação de assinatura, autenticação e limites de uso é uma etapa separada; os endpoints internos continuam atendendo a interface.
 
-O Worker preparado para `/pubbid/` e `/api/pubbid/*` não foi publicado por falta de permissão. O acesso pelo hostname existente usa diretamente o túnel e não depende desse Worker.
+O Worker preparado para aliases em `healthcare.tec.br/pubbid/` e `/api/pubbid/*` não foi publicado por falta de permissão. Os botões de `/acesso/` devem apontar diretamente para as URLs `fluid-api` verificadas e não dependem desse Worker.
 
 ## Verificação
 

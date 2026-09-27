@@ -21,11 +21,13 @@ Saída: `dist/`. O workflow `deploy-pages.yml` publica essa saída na branch `gh
 
 ## Aplicações
 
-O PubBid é o produto principal: pesquisa compras públicas e utiliza o catálogo do EqptEC. O EqptEC tem sua própria interface de planejamento e relatórios PDF. A página `/acesso/` distingue os dois produtos.
+O EqptEC é a entrada principal para o Planejamento de Incorporação Tecnológica.
+O PubBid é uma pesquisa complementar de compras públicas e utiliza o catálogo
+do EqptEC. A página `/acesso/` apresenta os dois destinos nessa ordem.
 
-- PubBid: porta 3039 no DV5. O destino padrão permanece `https://fluid-api.healthcare.tec.br/`, verificado com a interface PubBid e uma pesquisa sem coleta. `VITE_PUBBID_URL` permite substituir esse destino no build.
-- EqptEC: Streamlit na porta 8501, mantido internamente. O proprietário criará a ponte para acesso integrado pelo mesmo endereço público. O site informa integração em preparação até a implementação e validação desse fluxo.
-- Entrada pública única: `fluid-api.healthcare.tec.br` encaminha para o PubBid em 3039. Os subdomínios separados foram dispensados; não há dependência de novos registros DNS.
+- PubBid: pesquisa em `https://fluid-api.healthcare.tec.br/pubbid/` pelo gateway da porta 3039. A raiz pública abre o planejamento EqptEC. `VITE_PUBBID_URL` permite substituir o destino da pesquisa no build.
+- EqptEC: `https://fluid-api.healthcare.tec.br/` redireciona para `/eqptec/`; o gateway da porta 3039 encaminha o tráfego à porta interna 8501, incluindo WebSocket.
+- Entrada pública única: `fluid-api.healthcare.tec.br` encaminha para a porta 3039. Os subdomínios separados foram dispensados; não há dependência de novos registros DNS.
 - API: a comunicação comercial informa acesso mediante assinatura do serviço, com contato para condições e limites. Esta alteração de conteúdo não implementa autenticação, cobrança ou bloqueio técnico dos endpoints usados pela interface.
 
 O site não inclui bases SQLite. Tokens administrativos GitHub/Cloudflare ficam fora do clone e nunca devem entrar em variáveis `VITE_*`.

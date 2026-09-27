@@ -13,4 +13,4 @@
 @media(max-width:1000px){.site-nav{gap:14px;font-size:12px}.audience-grid{gap:40px}}
 @media(max-width:760px){.audience-grid{grid-template-columns:1fr;gap:10px}.audience-grid .eyebrow{margin-bottom:16px}.consulting-content #hero{min-height:520px;padding:45px 0}.consulting-content #contact>div>div:last-child{padding:24px}}
 
-.pubbid-access{border-color:#16837d;background:#f5faf8}.subscription-card{grid-column:1/-1}.subscription-card p{max-width:760px}
+.planning-access{border-color:#16837d;background:#f5faf8}.subscription-card{grid-column:1/-1}.subscription-card p{max-width:760px}
