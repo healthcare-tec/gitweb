@@ -1,11 +1,17 @@
 // Reuse the existing Worker for the public PubBid application.
 const API_PREFIX = '/api/pubbid';
 const APP_PATH = '/pubbid/';
+const corsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, OPTIONS',
+  'access-control-allow-headers': 'content-type',
+  'access-control-max-age': '86400',
+};
 
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...corsHeaders },
   });
 }
 
@@ -17,6 +23,7 @@ export default {
     const endpoint = url.pathname.slice(API_PREFIX.length);
     const isApi = url.pathname.startsWith(API_PREFIX + '/') && ['/search', '/jobs', '/refresh'].includes(endpoint);
     if (!isApp && !isApi) return json({ error: 'Not found' }, 404);
+    if (isApi && request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders });
     const method = isApi && endpoint === '/refresh' ? 'POST' : 'GET';
     if (request.method !== method) return json({ error: 'Method not allowed' }, 405);
     if (!env.PUBBID_UPSTREAM_URL) return json({ error: 'Application is not configured' }, 503);
@@ -44,7 +51,7 @@ export default {
     }
     return new Response(response.body, {
       status: response.status,
-      headers: { 'content-type': response.headers.get('content-type') || 'application/json', 'cache-control': 'no-store' },
+      headers: { 'content-type': response.headers.get('content-type') || 'application/json', 'cache-control': 'no-store', ...(isApi ? corsHeaders : {}) },
     });
   },
 };
