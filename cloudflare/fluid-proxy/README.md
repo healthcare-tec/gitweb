@@ -6,10 +6,10 @@ temporariamente pelo PubBid, apontando para `http://127.0.0.1:3039`, enquanto o
 serviço Fluid estiver parado. O nome do diretório e do Worker foi mantido
 para reutilizar os recursos do Fluid, conforme solicitado pelo proprietário.
 
-## Rotas preparadas
+## Rotas previstas no Worker
 
 - `/pubbid/`: interface do serviço PubBid da porta 3039.
-- `/api/pubbid/search`, `/api/pubbid/jobs`, `/api/pubbid/refresh`: API pública.
+- `/api/pubbid/search`, `/api/pubbid/jobs`, `/api/pubbid/refresh`: alias público da API, com CORS aberto.
 - A interface recebe os caminhos corretos das APIs e um link de volta ao site.
 - Acesso público sem login, conforme instrução do proprietário.
 
@@ -23,10 +23,10 @@ pelas novas rotas; os segredos antigos não são enviados à aplicação PubBid.
 2. Manter o túnel existente e o hostname `fluid-api.healthcare.tec.br`.
 3. Quando o Fluid voltar, restaurar a origem original e mover o PubBid para um
    hostname próprio antes de executar os dois serviços simultaneamente.
-4. Conferir página inicial e `/api/search?q=&refresh=0` no upstream público.
-5. Publicar este Worker e suas rotas, usando Workers Scripts/Routes Edit.
-6. Validar `/pubbid/` e a API sem credenciais e sem redirecionamento ao Access.
-7. Configurar a URL pública do site para `/pubbid/` e republicar o frontend.
+4. O hostname direto já responde em `https://fluid-api.healthcare.tec.br/`; uma busca de produção com `refresh=0` retornou HTTP 200 e JSON válido.
+5. Publicar este Worker e suas rotas. O token usado nesta sessão não tem acesso à criação de versões do Worker; ele precisa da permissão de edição de Workers Scripts e Routes.
+6. Validar `/pubbid/` e `/api/pubbid/*` sem credenciais e sem redirecionamento ao Access depois da publicação.
+7. Usar o hostname direto nos testes enquanto o alias no domínio principal não estiver implantado.
 
 O workflow manual permanece em `deploy-fluid-proxy.yml`, agora chamado
 `Deploy PubBid proxy`. Ele exige apenas `CLOUDFLARE_API_TOKEN` e
@@ -45,6 +45,9 @@ credenciais administrativas ou cookies.
 
 ## Estado
 
-Código preparado e testado localmente. Ainda não publicado: aguarda permissões
-para restaurar o Tunnel/DNS do endpoint anterior. O site institucional já foi
-publicado separadamente, com `/acesso/` em preparação.
+O túnel Fluid foi iniciado e sua configuração remota encaminha
+`fluid-api.healthcare.tec.br` para `localhost:3039`. O PubBid está respondendo
+no hostname direto; `GET /api/search` foi confirmado em produção. O Worker ainda
+não foi publicado: a API Cloudflare recusou a criação da versão por falta de
+acesso ao recurso. O código de proxy inclui CORS para o alias do domínio
+principal, que ficará ativo depois de conceder permissão e publicar o Worker.
