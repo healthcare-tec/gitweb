@@ -10,7 +10,7 @@ function staticPages() {
     writeBundle() {
       const html = readFileSync('dist/index.html', 'utf8')
       for (const [route, title, description] of [
-        ['acesso', 'Acessar o PubBid e o EqptEC | Healthcare.tec', 'Entre no PubBid para pesquisar equipamentos e reunir referências de compras públicas que apoiem seu planejamento.'],
+        ['acesso', 'Acessar o planejamento EqptEC e a pesquisa PubBid | Healthcare.tec', 'Entre no EqptEC para planejar a incorporação de equipamentos e consulte o PubBid para referências de compras públicas.'],
         ['consultoria', 'Consultoria em gestão e operações de saúde | Healthcare.tec', 'Conheça os serviços profissionais de gestão de projetos, processos e operações hospitalares da Healthcare.tec.'],
       ]) {
         const page = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
@@ -21,7 +21,7 @@ function staticPages() {
         mkdirSync(`dist/${route}`, { recursive: true })
         writeFileSync(`dist/${route}/index.html`, page)
       }
-      writeFileSync('dist/404.html', html.replace(/<title>.*?<\/title>/, '<title>Página não encontrada | PubBid</title>').replace('<head>', '<head><meta name="robots" content="noindex" />').replace(/\s*<link rel="canonical"[^>]*>/, ''))
+      writeFileSync('dist/404.html', html.replace(/<title>.*?<\/title>/, '<title>Página não encontrada | Healthcare.tec</title>').replace('<head>', '<head><meta name="robots" content="noindex" />').replace(/\s*<link rel="canonical"[^>]*>/, ''))
     },
   }
 }
