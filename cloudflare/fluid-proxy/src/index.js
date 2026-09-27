@@ -1,130 +1,50 @@
-const PUBLIC_PREFIX = "/api/fluid";
-const ALLOWED_ORIGIN = "https://healthcare.tec.br";
+// Reuse the existing Worker for the public PubBid application.
+const API_PREFIX = '/api/pubbid';
+const APP_PATH = '/pubbid/';
 
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
-    },
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
   });
-}
-
-function corsHeaders() {
-  return {
-    "access-control-allow-origin": ALLOWED_ORIGIN,
-    "access-control-allow-headers": "Content-Type, Idempotency-Key",
-    "access-control-allow-methods": "GET, POST, OPTIONS",
-    vary: "Origin",
-  };
-}
-
-function isAllowedBrowserRequest(request) {
-  const origin = request.headers.get("Origin");
-
-  if (origin && origin !== ALLOWED_ORIGIN) return false;
-  return true;
-}
-
-function accessReturnUrl(request) {
-  const requested = new URL(request.url).searchParams.get("return_to") || "/";
-
-  // Only allow same-origin absolute paths. This endpoint is a login bootstrap
-  // and must not become an open redirect.
-  if (!requested.startsWith("/") || requested.startsWith("//")) {
-    return new URL("/", request.url);
-  }
-
-  return new URL(requested, request.url);
-}
-
-function upstreamUrl(request, env) {
-  const publicUrl = new URL(request.url);
-  const upstream = new URL(env.FLUID_UPSTREAM_URL);
-  const suffix = publicUrl.pathname.slice(PUBLIC_PREFIX.length);
-
-  upstream.pathname = `/api/v1${suffix || "/"}`;
-  upstream.search = publicUrl.search;
-  return upstream;
-}
-
-function copyRequestHeaders(request, env) {
-  const headers = new Headers(request.headers);
-
-  // The browser must never be able to choose the application credential.
-  headers.set("Authorization", `Bearer ${env.FLUID_API_TOKEN}`);
-  headers.delete("Host");
-  headers.delete("Origin");
-  headers.delete("Referer");
-  headers.delete("Cookie");
-
-  headers.set("CF-Access-Client-Id", env.CF_ACCESS_CLIENT_ID);
-  headers.set("CF-Access-Client-Secret", env.CF_ACCESS_CLIENT_SECRET);
-
-  return headers;
 }
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-
-    if (url.pathname !== PUBLIC_PREFIX && !url.pathname.startsWith(`${PUBLIC_PREFIX}/`)) {
-      return json({ error: "Not found" }, 404);
+    if (url.pathname === '/pubbid') return Response.redirect(new URL(APP_PATH, url), 308);
+    const isApp = url.pathname === APP_PATH;
+    const endpoint = url.pathname.slice(API_PREFIX.length);
+    const isApi = url.pathname.startsWith(API_PREFIX + '/') && ['/search', '/jobs', '/refresh'].includes(endpoint);
+    if (!isApp && !isApi) return json({ error: 'Not found' }, 404);
+    const method = isApi && endpoint === '/refresh' ? 'POST' : 'GET';
+    if (request.method !== method) return json({ error: 'Method not allowed' }, 405);
+    if (!env.PUBBID_UPSTREAM_URL) return json({ error: 'Application is not configured' }, 503);
+    const upstream = new URL(env.PUBBID_UPSTREAM_URL);
+    upstream.pathname = isApp ? '/' : '/api' + endpoint;
+    upstream.search = url.search;
+    // Administrative and browser credentials are not forwarded to the public API.
+    const headers = new Headers({ accept: isApp ? 'text/html' : 'application/json' });
+    if (request.headers.has('content-type')) headers.set('content-type', request.headers.get('content-type'));
+    let response;
+    try {
+      response = await fetch(upstream, {
+        method, headers, body: method === 'POST' ? request.body : undefined, redirect: 'manual',
+      });
+    } catch {
+      return json({ error: 'O ambiente de pesquisa está temporariamente indisponível.' }, 502);
     }
-
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders() });
+    if (response.status >= 300 && response.status < 400) return json({ error: 'Unexpected upstream redirect' }, 502);
+    if (isApp && response.ok) {
+      if (!response.headers.get('content-type')?.includes('text/html')) return json({ error: 'Invalid application response' }, 502);
+      let html = await response.text();
+      html = html.replaceAll("fetch('/api/", "fetch('/api/pubbid/").replaceAll('fetch("/api/', 'fetch("/api/pubbid/');
+      html = html.replace('<body>', '<body><nav aria-label="Site institucional" style="padding:12px 20px;background:#102f3c;font:14px system-ui"><a href="/" style="color:#fff;text-decoration:none">← PubBid · Voltar ao site</a></nav>');
+      return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
     }
-
-    if (url.pathname === `${PUBLIC_PREFIX}/access`) {
-      if (request.method !== "GET") {
-        return json({ error: "Method not allowed" }, 405);
-      }
-
-      // Cloudflare Access challenges this protected path first. Once the user
-      // is authenticated, return them to the page that started the login.
-      return Response.redirect(accessReturnUrl(request), 302);
-    }
-
-    if (!["GET", "POST"].includes(request.method)) {
-      return json({ error: "Method not allowed" }, 405);
-    }
-
-    if (!isAllowedBrowserRequest(request)) {
-      return json({ error: "Origin not allowed" }, 403);
-    }
-
-    if (
-      !env.FLUID_API_TOKEN ||
-      !env.FLUID_UPSTREAM_URL ||
-      !env.CF_ACCESS_CLIENT_ID ||
-      !env.CF_ACCESS_CLIENT_SECRET
-    ) {
-      return json({ error: "Proxy is not configured" }, 503);
-    }
-
-    const init = {
-      method: request.method,
-      headers: copyRequestHeaders(request, env),
-      redirect: "manual",
-    };
-
-    if (request.method !== "GET") {
-      init.body = request.body;
-    }
-
-    const upstreamResponse = await fetch(upstreamUrl(request, env), init);
-    const responseHeaders = new Headers(upstreamResponse.headers);
-    responseHeaders.set("cache-control", "no-store");
-
-    for (const [name, value] of Object.entries(corsHeaders())) {
-      responseHeaders.set(name, value);
-    }
-
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers: responseHeaders,
+    return new Response(response.body, {
+      status: response.status,
+      headers: { 'content-type': response.headers.get('content-type') || 'application/json', 'cache-control': 'no-store' },
     });
   },
 };
