@@ -16,7 +16,6 @@ const contact = 'mailto:contato@healthcare.tec.br';
 function Header() {
   const [open, setOpen] = useState(false);
   const consultancyPage = path === '/consultoria';
-  const consultancyPage = path === '/consultoria';
   return <header className="site-header"><div className="site-wrap header-inner">
     <a className={consultancyPage ? 'brand healthcare-brand' : 'brand'} href="/" aria-label={consultancyPage ? 'Healthcare.tec — início' : 'PubBid — início'}>{consultancyPage ? <><img src="/logo-icon.png" alt="" /><span>Healthcare.tec<small>Engineering Health</small></span></> : <><span className="brand-symbol"><Layers size={22} /></span><span>Pub<span className="brand-light">Bid</span><small>por Healthcare.tec</small></span></>}</a>
     <button className="menu-toggle" aria-expanded={open} aria-controls="site-nav" aria-label={open ? 'Fechar menu' : 'Abrir menu'} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
@@ -81,3 +80,4 @@ function Footer() {
 export default function App() {
   return <><a className="skip-link" href="#conteudo">Pular para o conteúdo</a><Header /><main id="conteudo">{path === '/' ? <Home /> : path === '/acesso' ? <Access /> : path === '/consultoria' ? <div className="consulting-content"><Hero /><PainPoints /><Services /><Differentials /><About /><ContactForm /></div> : <section className="site-wrap access-section"><h1>Página não encontrada.</h1><a className="button" href="/">Voltar ao PubBid</a></section>}</main><Footer /></>;
 }
+
