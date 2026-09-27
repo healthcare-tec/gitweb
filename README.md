@@ -19,14 +19,17 @@ npm run build
 
 Saída: `dist/`. O workflow `deploy-pages.yml` publica essa saída na branch `gh-pages` quando há push em `main`. Ele também mantém os arquivos legados do Fluid, que deixou de ser destacado na navegação principal.
 
-## Aplicação PubBid
+## Aplicações
 
-A aplicação é um serviço separado, temporariamente remapeado para a porta 3039 do servidor DV5, a porta antes usada pelo Fluid. O proprietário definiu acesso público sem login. A página institucional não inclui a base SQLite. A tela `/acesso/` só anuncia o destino público quando `VITE_PUBBID_URL` estiver definido após a validação do fluxo completo.
+O PubBid é o produto principal: pesquisa compras públicas e utiliza o catálogo do EqptEC. O EqptEC tem sua própria interface de planejamento e relatórios PDF. A página `/acesso/` distingue os dois produtos.
 
-Para substituir a URL de testes `https://fluid-api.healthcare.tec.br/`, definir `VITE_PUBBID_URL` no ambiente de build ou em `.env.production` local. Essa variável contém apenas a URL pública. A tela `/acesso/` também documenta os endpoints públicos da API.
+- PubBid: porta 3039 no DV5. O destino padrão permanece `https://fluid-api.healthcare.tec.br/`, verificado com a interface PubBid e uma pesquisa sem coleta. `VITE_PUBBID_URL` permite substituir esse destino no build.
+- EqptEC: Streamlit na porta 8501. Definir `VITE_EQPTEC_URL` somente depois de validar seu endereço público; enquanto vazia, o site informa que a publicação está em preparação.
+- Subdomínios preparados no túnel: `pubbid.healthcare.tec.br` e `eqptec.healthcare.tec.br`. A criação de DNS foi recusada pelo Cloudflare (403); ainda não anunciar esses endereços como disponíveis.
+- API: a comunicação comercial informa acesso mediante assinatura do serviço, com contato para condições e limites. Esta alteração de conteúdo não implementa autenticação, cobrança ou bloqueio técnico dos endpoints usados pela interface.
 
-Tokens administrativos GitHub/Cloudflare não pertencem às variáveis `VITE_*` e não devem ser copiados para este projeto. As credenciais operacionais ficam fora do clone.
+O site não inclui bases SQLite. Tokens administrativos GitHub/Cloudflare ficam fora do clone e nunca devem entrar em variáveis `VITE_*`.
 
-O site institucional usa a home para apresentar o piloto PubBid. O conteúdo Healthcare.tec anterior permanece em `/consultoria/`. O proxy preparado reutiliza os recursos da API anterior e publica a interface em `/pubbid/`.
+A consultoria mantém a página `/consultoria/` e o logo original Healthcare.tec. Os recursos legados do Fluid continuam preservados.
 
 Veja [deploy/README.md](deploy/README.md) para implantação e reversão.
