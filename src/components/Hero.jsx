@@ -21,7 +21,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-green-500/90"></div>
       
       {/* Conteúdo */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <div className="relative w-full min-w-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <div className="max-w-4xl mx-auto">
           <div className="inline-block px-4 py-2 bg-white/20 rounded-full text-white text-sm font-semibold mb-6">
             ENGINEERING HEALTH
@@ -33,11 +33,11 @@ const Hero = () => {
             Da ideação e planejamento à excelência operacional e acreditação — transformamos projetos e processos hospitalares em sistemas confiáveis que entregam cuidado seguro, no prazo e em conformidade.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => scrollToSection('contact')} className="text-lg px-8">
+            <Button size="lg" onClick={() => scrollToSection('contact')} className="h-auto min-h-11 whitespace-normal text-base sm:text-lg px-5 py-3">
               Agendar Diagnóstico de 20 min
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button size="lg" variant="outline" onClick={() => scrollToSection('services')} className="text-lg px-8 bg-white/10 border-white text-white hover:bg-white hover:text-primary">
+            <Button size="lg" variant="outline" onClick={() => scrollToSection('services')} className="h-auto min-h-11 whitespace-normal text-base sm:text-lg px-5 py-3 bg-white/10 border-white text-white hover:bg-white hover:text-primary">
               Conheça nossos serviços
             </Button>
           </div>
@@ -48,4 +48,3 @@ const Hero = () => {
 };
 
 export default Hero;
-

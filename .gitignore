@@ -2,3 +2,7 @@ node_modules/
 
 dist/
 
+# Local credentials
+.env
+.env.*
+!.env.example
