@@ -11,7 +11,6 @@ import './pubbid.css';
 
 const path = window.location.pathname.replace(/\/+$/, '').replace(/\/index\.html$/, '') || '/';
 const appUrl = import.meta.env.VITE_PUBBID_URL || 'https://fluid-api.healthcare.tec.br/';
-const eqptecUrl = import.meta.env.VITE_EQPTEC_URL || '';
 const contact = 'mailto:contato@healthcare.tec.br';
 
 function Header() {
@@ -88,8 +87,8 @@ function Access() {
       <article id="eqptec" className="access-card">
         <span className="feature-status muted-status">Aplicação complementar</span>
         <h2>EqptEC · Planejamento de equipamentos</h2>
-        <p>Acesse o ambiente de Planejamento de Incorporação Tecnológica do EqptEC, com seu catálogo de equipamentos e recursos próprios de planejamento. A interface e os relatórios PDF pertencem ao EqptEC.</p>
-        {eqptecUrl ? <a className="text-link" href={eqptecUrl}>Abrir o EqptEC <ArrowUpRight size={17} /></a> : <p className="access-note">O endereço público do EqptEC está em preparação.</p>}
+        <p>O EqptEC reúne o catálogo de equipamentos e recursos próprios de planejamento. Sua interface e seus relatórios PDF são recursos complementares ao PubBid.</p>
+        <p className="access-note">O acesso integrado ao EqptEC está em preparação.</p>
       </article>
       <article className="access-card api-card subscription-card">
         <span className="feature-status">Mediante assinatura</span>

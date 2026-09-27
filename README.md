@@ -24,8 +24,8 @@ Saída: `dist/`. O workflow `deploy-pages.yml` publica essa saída na branch `gh
 O PubBid é o produto principal: pesquisa compras públicas e utiliza o catálogo do EqptEC. O EqptEC tem sua própria interface de planejamento e relatórios PDF. A página `/acesso/` distingue os dois produtos.
 
 - PubBid: porta 3039 no DV5. O destino padrão permanece `https://fluid-api.healthcare.tec.br/`, verificado com a interface PubBid e uma pesquisa sem coleta. `VITE_PUBBID_URL` permite substituir esse destino no build.
-- EqptEC: Streamlit na porta 8501. Definir `VITE_EQPTEC_URL` somente depois de validar seu endereço público; enquanto vazia, o site informa que a publicação está em preparação.
-- Subdomínios preparados no túnel: `pubbid.healthcare.tec.br` e `eqptec.healthcare.tec.br`. A criação de DNS foi recusada pelo Cloudflare (403); ainda não anunciar esses endereços como disponíveis.
+- EqptEC: Streamlit na porta 8501, mantido internamente. O proprietário criará a ponte para acesso integrado pelo mesmo endereço público. O site informa integração em preparação até a implementação e validação desse fluxo.
+- Entrada pública única: `fluid-api.healthcare.tec.br` encaminha para o PubBid em 3039. Os subdomínios separados foram dispensados; não há dependência de novos registros DNS.
 - API: a comunicação comercial informa acesso mediante assinatura do serviço, com contato para condições e limites. Esta alteração de conteúdo não implementa autenticação, cobrança ou bloqueio técnico dos endpoints usados pela interface.
 
 O site não inclui bases SQLite. Tokens administrativos GitHub/Cloudflare ficam fora do clone e nunca devem entrar em variáveis `VITE_*`.
