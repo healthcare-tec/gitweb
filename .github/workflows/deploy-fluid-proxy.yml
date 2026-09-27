@@ -1,4 +1,4 @@
-name: Deploy Fluid proxy
+name: Deploy PubBid proxy
 
 on:
   workflow_dispatch:
@@ -18,18 +18,9 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          FLUID_API_TOKEN: ${{ secrets.FLUID_API_TOKEN }}
-          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           missing=0
-          for name in \
-            CLOUDFLARE_API_TOKEN \
-            CLOUDFLARE_ACCOUNT_ID \
-            FLUID_API_TOKEN \
-            CF_ACCESS_CLIENT_ID \
-            CF_ACCESS_CLIENT_SECRET
-          do
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
             if [ -z "${!name}" ]; then
               echo "::error::GitHub Secret ausente: $name"
               missing=1
@@ -37,20 +28,16 @@ jobs:
           done
           exit "$missing"
 
-      - name: Deploy Worker and bind secrets
+      - name: Verify public upstream
+        run: |
+          curl --fail --silent --show-error --max-time 30 'https://fluid-api.healthcare.tec.br/api/search?q=&refresh=0' | python3 -c 'import json,sys; d=json.load(sys.stdin); assert "results" in d and "coverage" in d'
+
+      - name: Deploy existing Worker for PubBid
         uses: cloudflare/wrangler-action@v3
-        env:
-          FLUID_API_TOKEN: ${{ secrets.FLUID_API_TOKEN }}
-          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare/fluid-proxy
           packageManager: npm
           wranglerVersion: "4"
-          secrets: |
-            FLUID_API_TOKEN
-            CF_ACCESS_CLIENT_ID
-            CF_ACCESS_CLIENT_SECRET
           command: deploy

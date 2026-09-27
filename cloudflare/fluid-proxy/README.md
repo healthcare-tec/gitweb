@@ -1,54 +1,50 @@
-# Cloudflare Worker do Fluid
+# Proxy público do PubBid
 
-Este Worker faz a ponte entre o site público e a API Fluid sem expor tokens ao
-navegador.
+Reaproveita o Worker existente `healthcare-fluid-proxy` e o túnel compartilhado
+do projeto Fluid. O hostname original `fluid-api.healthcare.tec.br` será reutilizado
+temporariamente pelo PubBid, apontando para `http://127.0.0.1:3039`, enquanto o
+serviço Fluid estiver parado. O nome do diretório e do Worker foi mantido
+para reutilizar os recursos do Fluid, conforme solicitado pelo proprietário.
 
-## Configuração obrigatória
+## Rotas preparadas
 
-1. No Cloudflare Tunnel, criar o hostname `fluid-api.healthcare.tec.br`
-   apontando para `http://127.0.0.1:3039`.
-2. Criar uma aplicação Access para esse hostname.
-3. Criar uma política `Service Auth -> Service Token` para o Worker.
-4. Criar o Service Token e guardar o Client ID e Client Secret.
-5. No repositório GitHub, cadastrar os secrets da lista abaixo.
-6. Executar manualmente a ação `Deploy Fluid proxy` uma primeira vez.
-7. Configurar os três secrets do Worker no dashboard Cloudflare.
-8. Executar a ação novamente para publicar o código com os secrets disponíveis.
-9. Testar o hostname direto e a rota `/api/fluid/service-types`.
+- `/pubbid/`: interface do serviço PubBid da porta 3039.
+- `/api/pubbid/search`, `/api/pubbid/jobs`, `/api/pubbid/refresh`: API pública.
+- A interface recebe os caminhos corretos das APIs e um link de volta ao site.
+- Acesso público sem login, conforme instrução do proprietário.
 
-Durante a primeira publicação, o Worker pode responder 503 até que os secrets
-sejam configurados. Isso é esperado e evita que o proxy opere sem autenticação.
+O Worker anterior usa `/api/fluid/*`. A nova configuração substitui essa rota
+pelas rotas PubBid. A aplicação Access existente em `/api/fluid` não é utilizada
+pelas novas rotas; os segredos antigos não são enviados à aplicação PubBid.
 
-## Secrets do Worker
+## Pré-requisitos de implantação
 
-Os valores abaixo são secrets do Worker e não devem entrar no Git:
+1. Serviço PubBid ativo em `127.0.0.1:3039` no DV5.
+2. Manter o túnel existente e o hostname `fluid-api.healthcare.tec.br`.
+3. Quando o Fluid voltar, restaurar a origem original e mover o PubBid para um
+   hostname próprio antes de executar os dois serviços simultaneamente.
+4. Conferir página inicial e `/api/search?q=&refresh=0` no upstream público.
+5. Publicar este Worker e suas rotas, usando Workers Scripts/Routes Edit.
+6. Validar `/pubbid/` e a API sem credenciais e sem redirecionamento ao Access.
+7. Configurar a URL pública do site para `/pubbid/` e republicar o frontend.
 
-- `FLUID_API_TOKEN`: mesmo token configurado na API;
-- `CF_ACCESS_CLIENT_ID`: Client ID do Service Token;
-- `CF_ACCESS_CLIENT_SECRET`: Client Secret do Service Token.
+O workflow manual permanece em `deploy-fluid-proxy.yml`, agora chamado
+`Deploy PubBid proxy`. Ele exige apenas `CLOUDFLARE_API_TOKEN` e
+`CLOUDFLARE_ACCOUNT_ID` nos secrets do GitHub, e verifica o upstream antes de
+publicar. O `.env` local não atualiza automaticamente os secrets do GitHub.
 
-No dashboard, abra **Workers & Pages > Worker > Settings > Variables and
-Secrets**, adicione os três como tipo **Secret** e publique. Alternativamente,
-use `wrangler secret put` localmente. Os valores não ficam no frontend nem em
-`wrangler.toml`.
+## Validação local
 
-## Secrets do GitHub Actions
+```sh
+node --test cloudflare/fluid-proxy/src/index.test.js
+```
 
-No GitHub, em Settings > Secrets and variables > Actions, cadastrar:
+O teste verifica transformação dos caminhos da interface, preservação de query
+strings e corpo POST, tratamento de falhas e ausência de encaminhamento de
+credenciais administrativas ou cookies.
 
-- `CLOUDFLARE_API_TOKEN`: token de usuário do Cloudflare com escopo mínimo
-  para **Workers Scripts: Write** e **Workers Routes: Write** na conta/zona
-  deste projeto;
-- `CLOUDFLARE_ACCOUNT_ID`: ID da conta Cloudflare.
+## Estado
 
-A ação está configurada como manual (`workflow_dispatch`) para impedir um
-deploy acidental antes da configuração do Access.
-
-## Segurança
-
-A rota do Worker também precisa estar protegida pela autenticação da área
-Fluid. A validação de origem reduz chamadas acidentais, mas não substitui
-Cloudflare Access nem a autorização na API.
-
-A API direta não deve ser publicada como acesso público. O Worker usa Service
-Auth para alcançar o hostname protegido e injeta o token da API no servidor.
+Código preparado e testado localmente. Ainda não publicado: aguarda permissões
+para restaurar o Tunnel/DNS do endpoint anterior. O site institucional já foi
+publicado separadamente, com `/acesso/` em preparação.
