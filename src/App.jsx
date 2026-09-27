@@ -11,6 +11,7 @@ import './pubbid.css';
 
 const path = window.location.pathname.replace(/\/+$/, '').replace(/\/index\.html$/, '') || '/';
 const appUrl = import.meta.env.VITE_PUBBID_URL || 'https://fluid-api.healthcare.tec.br/';
+const eqptecUrl = import.meta.env.VITE_EQPTEC_URL || '';
 const contact = 'mailto:contato@healthcare.tec.br';
 
 function Header() {
@@ -72,12 +73,38 @@ function Home() {
 }
 
 function Access() {
-  return <section className="site-wrap access-section"><a className="text-link" href="/">← Conhecer o PubBid</a><p className="eyebrow">AMBIENTE DE PESQUISA</p><h1>Acesso ao Planejamento de Incorporação Tecnológica.</h1><p className="section-intro">Entre no PubBid para pesquisar equipamentos e reunir referências de compras públicas que apoiem seu planejamento.</p><div className="access-grid"><article className="access-card"><span className="feature-status">{appUrl ? 'Ambiente disponível' : 'Interface em preparação'}</span><h2>Pesquisa de equipamentos</h2><p>{appUrl ? 'Abra o ambiente de pesquisa. Confira os registros e as fontes disponíveis antes de usar as informações no planejamento.' : 'O endereço público da interface será informado depois da validação do fluxo completo de pesquisa.'}</p><a className="button" href={appUrl || `${contact}?subject=Disponibilidade%20do%20PubBid`}>{appUrl ? 'Abrir o PubBid' : 'Consultar disponibilidade'} <ArrowUpRight size={17} /></a></article><article className="access-card api-card"><span className="feature-status">API pública · sem autenticação</span><h2>Teste os endpoints</h2><p>A API está disponível no hostname público do ambiente. As respostas variam conforme o acervo local, os filtros e a cobertura das fontes.</p><dl className="api-endpoints"><div><dt><code>GET https://fluid-api.healthcare.tec.br/api/search</code></dt><dd>Parâmetros: <code>q</code>, <code>mode</code> (default ou discovery), <code>quality</code> (broad ou strict) e <code>refresh</code>.</dd></div><div><dt><code>GET https://fluid-api.healthcare.tec.br/api/jobs?id=123</code></dt><dd>Consulta o estado de uma coleta pelo identificador retornado pela pesquisa ou atualização.</dd></div><div><dt><code>POST https://fluid-api.healthcare.tec.br/api/refresh</code></dt><dd>Inicia uma atualização. Corpo JSON: <code>{'{"q":"tomógrafo","mode":"default"}'}</code>.</dd></div></dl><p className="api-example">Busca sem iniciar coleta (cURL):</p><pre className="api-code"><code>{"curl --get 'https://fluid-api.healthcare.tec.br/api/search' --data-urlencode 'q=tomografo' --data-urlencode 'mode=default' --data-urlencode 'quality=strict' --data-urlencode 'refresh=0'"}</code></pre><p className="api-example">Exemplo: <a href="https://fluid-api.healthcare.tec.br/api/search?q=tomografo&mode=default&quality=strict&refresh=0"><code>https://fluid-api.healthcare.tec.br/api/search?q=tomografo&amp;mode=default&amp;quality=strict&amp;refresh=0</code></a></p><p className="api-note">A API é pública e não exige chave. O endpoint de atualização inicia uma coleta em segundo plano nas fontes conectadas. cURL e Postman podem chamar o hostname direto; chamadas de navegador em outros domínios aguardam a publicação do alias com CORS. Confirme os dados na fonte oficial.</p></article></div><p className="access-note">O piloto cobre equipamentos médico-assistenciais. <a href="/#fontes">Conheça as fontes e limites.</a></p></section>;
+  return <section className="site-wrap access-section">
+    <a className="text-link" href="/">← Conhecer o PubBid</a>
+    <p className="eyebrow">PESQUISA DE COMPRAS PÚBLICAS</p>
+    <h1>Acessar o PubBid.</h1>
+    <p className="section-intro">Pesquise aquisições de equipamentos, examine referências de preços e confira as fontes. O PubBid utiliza o catálogo do EqptEC; cada aplicação tem sua própria interface e finalidade.</p>
+    <div className="access-grid">
+      <article className="access-card pubbid-access">
+        <span className="feature-status">Aplicação principal</span>
+        <h2>PubBid · Compras públicas</h2>
+        <p>Consulte processos, itens e resultados disponíveis. Use a pesquisa recente ou histórica e confira a cobertura e as fontes antes de levar as referências para sua análise.</p>
+        <a className="button" href={appUrl}>Abrir o PubBid <ArrowUpRight size={17} /></a>
+      </article>
+      <article id="eqptec" className="access-card">
+        <span className="feature-status muted-status">Aplicação complementar</span>
+        <h2>EqptEC · Planejamento de equipamentos</h2>
+        <p>Acesse o ambiente de Planejamento de Incorporação Tecnológica do EqptEC, com seu catálogo de equipamentos e recursos próprios de planejamento. A interface e os relatórios PDF pertencem ao EqptEC.</p>
+        {eqptecUrl ? <a className="text-link" href={eqptecUrl}>Abrir o EqptEC <ArrowUpRight size={17} /></a> : <p className="access-note">O endereço público do EqptEC está em preparação.</p>}
+      </article>
+      <article className="access-card api-card subscription-card">
+        <span className="feature-status">Mediante assinatura</span>
+        <h2>API do PubBid</h2>
+        <p>O acesso à API para integrar os dados do PubBid a outros sistemas poderá ser contratado mediante assinatura do serviço. Entre em contato para conhecer as condições de acesso e os limites de uso.</p>
+        <a className="text-link" href={`${contact}?subject=Assinatura%20da%20API%20PubBid`}>Consultar assinatura da API <ArrowUpRight size={17} /></a>
+      </article>
+    </div>
+    <p className="access-note">O piloto PubBid cobre equipamentos médico-assistenciais. <a href="/#fontes">Conheça as fontes e limites.</a></p>
+  </section>;
 }
 
 function Footer() {
   const consultancyPage = path === '/consultoria';
-  return <footer className="site-footer"><div className="site-wrap"><div className="footer-grid"><div><a className={consultancyPage ? 'brand healthcare-brand footer-healthcare-brand' : 'brand'} href="/">{consultancyPage ? <><img src="/logo-icon.png" alt="" /><span>Healthcare.tec<small>Engineering Health</small></span></> : 'PubBid'}</a><p>{consultancyPage ? 'Consultoria em gestão e operações de saúde.' : <>Apoio à pesquisa para planejamento de incorporação.<br />Uma iniciativa Healthcare.tec.</>}</p></div><nav aria-label="Rodapé"><a href="/#como-funciona">Como apoia o planejamento</a><a href="/#recursos">Recursos</a><a href="/#fontes">Fontes e limites</a><a href="/consultoria/">Consultoria</a><a href="/acesso/">Acessar o PubBid</a></nav><div><span className="footer-label">VAMOS CONVERSAR</span><a href={contact}>contato@healthcare.tec.br <ArrowUpRight size={14} /></a></div></div><div className="footer-bottom"><p>{consultancyPage ? 'Healthcare.tec — consultoria em gestão de projetos, processos e operações hospitalares.' : 'Ferramenta de apoio à pesquisa para o planejamento de incorporação. Cobertura parcial; confira as fontes e faça a avaliação com a equipe responsável.'}</p><span>© {new Date().getFullYear()} Healthcare.tec</span></div></div></footer>;
+  return <footer className="site-footer"><div className="site-wrap"><div className="footer-grid"><div><a className={consultancyPage ? 'brand healthcare-brand footer-healthcare-brand' : 'brand'} href="/">{consultancyPage ? <><img src="/logo-icon.png" alt="" /><span>Healthcare.tec<small>Engineering Health</small></span></> : 'PubBid'}</a><p>{consultancyPage ? 'Consultoria em gestão e operações de saúde.' : <>Apoio à pesquisa para planejamento de incorporação.<br />Uma iniciativa Healthcare.tec.</>}</p></div><nav aria-label="Rodapé"><a href="/#como-funciona">Como apoia o planejamento</a><a href="/#recursos">Recursos</a><a href="/#fontes">Fontes e limites</a><a href="/consultoria/">Consultoria</a><a href="/acesso/">Acessar o PubBid</a><a href="/acesso/#eqptec">EqptEC</a></nav><div><span className="footer-label">VAMOS CONVERSAR</span><a href={contact}>contato@healthcare.tec.br <ArrowUpRight size={14} /></a></div></div><div className="footer-bottom"><p>{consultancyPage ? 'Healthcare.tec — consultoria em gestão de projetos, processos e operações hospitalares.' : 'Ferramenta de apoio à pesquisa para o planejamento de incorporação. Cobertura parcial; confira as fontes e faça a avaliação com a equipe responsável.'}</p><span>© {new Date().getFullYear()} Healthcare.tec</span></div></div></footer>;
 }
 
 export default function App() {
