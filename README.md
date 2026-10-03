@@ -36,7 +36,6 @@ O site não inclui bases SQLite. Tokens administrativos GitHub/Cloudflare ficam 
 
 Além das integrações parciais PNCP e Compras.gov.br, o aplicativo PubBid tem consultas limitadas ao PNCP PCA e a planos de transferências especiais no Transferegov. Elas se restringem a CNPJs de compradores/beneficiários encontrados no acervo PNCP local ou informados pela CLI. Esses planos são registros de planejamento/financiamento, separados de licitações; não indicam cobertura nacional. O enriquecimento CGU é opcional e exige `PUBBID_CGU_API_KEY`. BPS, propostas FNS/InvestSUS e outros módulos Transferegov não estão conectados.
 
-O texto atual em `src/App.jsx` ainda classifica PCA entre as integrações futuras e deve ser corrigido em uma revisão separada do frontend; esta atualização é documentação apenas.
 
 A consultoria mantém a página `/consultoria/` e o logo original Healthcare.tec. Os recursos legados do Fluid continuam preservados.
 
