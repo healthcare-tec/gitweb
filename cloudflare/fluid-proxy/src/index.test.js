@@ -7,7 +7,7 @@ test('public UI and API use the existing origin without forwarding credentials',
   const calls = [];
   globalThis.fetch = async (url, init) => {
     calls.push({ url: String(url), init });
-    if (url.pathname === '/') return new Response("<body><script>fetch('/api/search?q=x');fetch('/api/jobs?id=1');fetch('/api/refresh',{method:'POST'});</script></body>", { headers: { 'content-type': 'text/html' } });
+    if (url.pathname === '/pubbid/') return new Response("<body><script>fetch('/api/search?q=x');fetch('/api/jobs?id=1');fetch('/api/refresh',{method:'POST'});</script></body>", { headers: { 'content-type': 'text/html' } });
     return new Response('{"ok":true}', { headers: { 'content-type': 'application/json' } });
   };
   const env = { PUBBID_UPSTREAM_URL: 'https://fluid-api.healthcare.tec.br' };

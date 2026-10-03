@@ -28,7 +28,7 @@ export default {
     if (request.method !== method) return json({ error: 'Method not allowed' }, 405);
     if (!env.PUBBID_UPSTREAM_URL) return json({ error: 'Application is not configured' }, 503);
     const upstream = new URL(env.PUBBID_UPSTREAM_URL);
-    upstream.pathname = isApp ? '/' : '/api' + endpoint;
+    upstream.pathname = isApp ? '/pubbid/' : '/api' + endpoint;
     upstream.search = url.search;
     // Administrative and browser credentials are not forwarded to the public API.
     const headers = new Headers({ accept: isApp ? 'text/html' : 'application/json' });
