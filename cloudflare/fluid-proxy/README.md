@@ -23,7 +23,7 @@ pelas novas rotas; os segredos antigos não são enviados à aplicação PubBid.
 2. Manter o túnel existente e o hostname `fluid-api.healthcare.tec.br`.
 3. Quando o Fluid voltar, restaurar a origem original e mover o PubBid para um
    hostname próprio antes de executar os dois serviços simultaneamente.
-4. O hostname direto já responde em `https://fluid-api.healthcare.tec.br/`; uma busca de produção com `refresh=0` retornou HTTP 200 e JSON válido.
+4. O hostname direto abre o planejamento EqptEC na raiz; PubBid responde em `https://fluid-api.healthcare.tec.br/pubbid/`. A API interna PubBid permanece em `/api/*`.
 5. Publicar este Worker e suas rotas. O token usado nesta sessão não tem acesso à criação de versões do Worker; ele precisa da permissão de edição de Workers Scripts e Routes.
 6. Validar `/pubbid/` e `/api/pubbid/*` sem credenciais e sem redirecionamento ao Access depois da publicação.
 7. Usar o hostname direto nos testes enquanto o alias no domínio principal não estiver implantado.
@@ -46,8 +46,8 @@ credenciais administrativas ou cookies.
 ## Estado
 
 O túnel Fluid foi iniciado e sua configuração remota encaminha
-`fluid-api.healthcare.tec.br` para `localhost:3039`. O PubBid está respondendo
-no hostname direto; `GET /api/search` foi confirmado em produção. O Worker ainda
+`fluid-api.healthcare.tec.br` para `localhost:3039`. O EqptEC é a entrada principal,
+e PubBid responde em `/pubbid/`. O Worker ainda
 não foi publicado: a API Cloudflare recusou a criação da versão por falta de
 acesso ao recurso. O código de proxy inclui CORS para o alias do domínio
 principal, que ficará ativo depois de conceder permissão e publicar o Worker.
